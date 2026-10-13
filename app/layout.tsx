@@ -6,6 +6,7 @@ import { ViewTransition } from "react";
 import { Providers } from "@/components/providers";
 import { SceneCanvas } from "@/components/three/scene-canvas";
 import { config } from "@/lib/config";
+import { openGraph, twitter } from "@/lib/config/metadata";
 import { danaFont } from "@/styles/fonts";
 
 export const metadata: Metadata = {
@@ -14,14 +15,8 @@ export const metadata: Metadata = {
   description: config.appDescription,
   applicationName: config.appName,
   keywords: ["در", "درت", "درب", "درب ضدسرقت", "Daret"],
-  openGraph: {
-    type: "website",
-    siteName: config.appName,
-    url: config.appHost,
-    title: config.appName,
-    description: config.appDescription,
-  },
-  twitter: { card: "summary_large_image", title: config.appName, description: config.appDescription },
+  openGraph,
+  twitter,
   robots: { index: true, follow: true, "max-image-preview": "large" },
   formatDetection: { telephone: false },
 };

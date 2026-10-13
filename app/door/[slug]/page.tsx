@@ -1,20 +1,34 @@
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 
 import { cn } from "cn";
 import { notFound } from "next/navigation";
 
 import { DoorView } from "@/components/door-view";
 import { ShareButton } from "@/components/share-button";
+import { openGraph, twitter } from "@/lib/config/metadata";
 import { doors, findDoor } from "@/lib/doors";
 
 export function generateStaticParams() {
   return doors.map(({ slug }) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/door/[slug]">): Promise<Metadata> {
+export async function generateMetadata(
+  { params }: PageProps<"/door/[slug]">,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
   const door = findDoor((await params).slug);
 
-  return door ? { title: `در ${door.name}` } : {};
+  if (!door) return {};
+
+  // Setting `openGraph`/`twitter` drops the inherited file-based images, so carry them over.
+  const { openGraph: parentOpenGraph, twitter: parentTwitter } = await parent;
+  const title = `در ${door.name}`;
+
+  return {
+    title,
+    openGraph: { ...openGraph, title, images: parentOpenGraph?.images ?? [] },
+    twitter: { ...twitter, title, images: parentTwitter?.images ?? [] },
+  };
 }
 
 export default async function DoorPage({ params }: PageProps<"/door/[slug]">) {

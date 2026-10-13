@@ -6,7 +6,7 @@ import { cn } from "cn";
 import { motion, useInView, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import type { Door, DoorSlug } from "@/lib/doors";
 
@@ -37,6 +37,17 @@ const wait = (ms: number) =>
     setTimeout(resolve, ms);
   });
 
+// A fresh order per page load. Only read on the client, so the server and hydration keep the catalog order.
+let shuffled: readonly Door[] | undefined;
+const getShuffled = () =>
+  (shuffled ??= doors
+    .map((door) => ({ door, key: Math.random() }))
+    .toSorted((a, b) => a.key - b.key)
+    .map(({ door }) => door));
+const getCatalog = () => doors;
+// Nothing to subscribe to: the order never changes after the first read.
+const subscribe = () => () => undefined;
+
 function toBox({ top, left, width, height }: DOMRect): Box {
   return { top, left, width, height };
 }
@@ -60,6 +71,7 @@ export function DoorPicker({ children }: { children: ReactNode }) {
   const pageRef = useRef<HTMLDivElement>(null);
   const [leaving, setLeaving] = useState<Leaving>();
   const [origin, setOrigin] = useState("50% 50%");
+  const order = useSyncExternalStore(subscribe, getShuffled, getCatalog);
 
   // Next keeps this page mounted but hidden after navigating away; come back to a fresh grid.
   useLayoutEffect(() => () => setLeaving(undefined), []);
@@ -96,7 +108,7 @@ export function DoorPicker({ children }: { children: ReactNode }) {
       >
         <div className="transition-opacity duration-500 group-data-leaving/page:opacity-0">{children}</div>
         <ul className="grid grid-cols-2 border-s border-t transition-colors duration-500 group-data-leaving/page:border-transparent md:grid-cols-3 xl:grid-cols-5">
-          {doors.map((door, index) => (
+          {order.map((door, index) => (
             <DoorCell key={door.slug} door={door} index={index} leaving={leaving} onChoose={choose} />
           ))}
         </ul>

@@ -1,6 +1,6 @@
 # Doors
 
-Catalog: `lib/doors.ts` (server-safe `{ slug, name }[]`; order = grid order, `name` is shown as «در {name}»).
+Catalog: `lib/doors.ts` (server-safe `{ slug, name }[]`; grid order is shuffled per page load in `door-picker.tsx`, `name` is shown as «در {name}»).
 Models: `components/doors/<slug>.tsx`, registered by slug in `components/doors/index.ts` (`Record<DoorSlug, ComponentType>`, so a missing model is a type error).
 
 ## Adding a door

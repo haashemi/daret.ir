@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from "next";
 import { ViewTransition } from "react";
 
 import { Providers } from "@/components/providers";
+import { SceneCanvas } from "@/components/three/scene-canvas";
 import { config } from "@/lib/config";
 import { danaFont } from "@/styles/fonts";
 
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
   title: { default: config.appName, template: `%s | ${config.appName}` },
   description: config.appDescription,
   applicationName: config.appName,
-  keywords: ["تقویم", "تعطیلی", "مناسبت", "روزهای کاری", "تقویم شمسی", "Keyeh"],
+  keywords: ["در", "درت", "درب", "درب ضدسرقت", "Daret"],
   openGraph: {
     type: "website",
     siteName: config.appName,
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     title: config.appName,
     description: config.appDescription,
   },
-  twitter: { card: "summary", title: config.appName, description: config.appDescription },
+  twitter: { card: "summary_large_image", title: config.appName, description: config.appDescription },
   robots: { index: true, follow: true, "max-image-preview": "large" },
   formatDetection: { telephone: false },
 };
@@ -38,7 +39,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="fa" dir="rtl" className={danaFont.variable} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body>
         <Providers>
-          <div className="flex min-h-svh flex-col items-center gap-6 pb-6">
+          <SceneCanvas />
+          <div className="flex min-h-svh flex-col items-center gap-6">
             <ViewTransition name="app-page">
               <main className="container flex max-w-7xl flex-1 flex-col gap-6 px-4">{children}</main>
             </ViewTransition>

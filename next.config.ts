@@ -4,8 +4,8 @@ const nextConfig: NextConfig = {
   output: "export",
   typedRoutes: true,
   reactCompiler: true,
-  cacheComponents: true,
-  partialPrefetching: true,
+  cacheComponents: false,
+  partialPrefetching: false,
   poweredByHeader: false,
 };
 

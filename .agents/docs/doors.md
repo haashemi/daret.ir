@@ -18,14 +18,14 @@ Models: `components/doors/<slug>.tsx`, registered by slug in `components/doors/i
 
 ## Parts (`components/three/parts.tsx`)
 
-| Part                                      | Use                                                                                                    |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `Box`, `Cylinder`, `Sphere`               | Mesh + geometry with a shared `material`. `Cylinder` is upright; `rotation={[Math.PI / 2, 0, 0]}` faces the viewer. |
-| `Frame`                                   | Two jambs and a head around a `width` x `height` opening.                                              |
-| `Hinge`                                   | Swings children **toward the viewer** by `angle * open`. Left hinge: leaf extends to `+x`; `side="right"`: to `-x`. |
-| `Slide`                                   | Moves children by `by * open` (elevator, shoji).                                                       |
-| `Backlight`                               | The light filling the opening (`width`/`height`, or `radius` for round doors).                         |
-| `OpenContext`                             | Read `use(OpenContext).current` in `useFrame` for custom motion (vault wheel).                         |
+| Part                        | Use                                                                                                                 |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `Box`, `Cylinder`, `Sphere` | Mesh + geometry with a shared `material`. `Cylinder` is upright; `rotation={[Math.PI / 2, 0, 0]}` faces the viewer. |
+| `Frame`                     | Two jambs and a head around a `width` x `height` opening.                                                           |
+| `Hinge`                     | Swings children **toward the viewer** by `angle * open`. Left hinge: leaf extends to `+x`; `side="right"`: to `-x`. |
+| `Slide`                     | Moves children by `by * open` (elevator, shoji).                                                                    |
+| `Backlight`                 | The light filling the opening (`width`/`height`, or `radius` for round doors).                                      |
+| `OpenContext`               | Read `use(OpenContext).current` in `useFrame` for custom motion (vault wheel, cat flap, shutter, revolving).        |
 
 Conventions:
 
@@ -33,4 +33,5 @@ Conventions:
 - Leaves swing outward so they never pass through the `Backlight` right behind the opening. Every door needs a `Backlight` sized to its opening, or the light shows around the frame.
 - Typical leaf: `<Hinge at={[-W / 2, 0, 0.03]}>` with the leaf box at `[W / 2, 0, -0.025]`, sized `[W - 0.01, H - 0.01, 0.045]`. Details sit on the front face at `z ≈ 0..0.05`.
 - Double doors use two `Hinge`s and a local `Leaf({ dir })` (`barn.tsx`, `persian.tsx`, `container.tsx`).
+- `Hinge`s nest: a bi-fold is a `Hinge` holding a panel and a second `Hinge` at twice the angle on the other side (`bus.tsx`); `nested.tsx` puts doors in doors.
 - Open amounts: grid `0`, hover/focus `0.2`, flight and result page `1`.

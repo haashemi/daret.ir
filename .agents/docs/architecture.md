@@ -16,7 +16,7 @@ A Persian (RTL, `lang="fa"`, forced dark theme) single-purpose meme site: a luxu
 
 - `components/three/scene-canvas.tsx` mounts the **only** WebGL canvas (in `app/layout.tsx`), `position: fixed`, `z-index: -1`, `pointer-events: none`.
 - `components/door-view.tsx` renders drei's `<View>`: a DOM box whose screen rect the canvas draws into each frame (scissored). Size and position doors with ordinary CSS on that box; CSS transforms (scale, motion) are followed too.
-- **The canvas is under the DOM.** Any element with a background above a door hides it. That's how the grid's reveal/dismiss "covers" work, and why page containers must stay transparent.
+- **The canvas is under the DOM.** Any element with a background above a door hides it. That's how the grid's reveal/dismiss "covers" work (each cover also holds a shimmering door placeholder until `DoorScene` calls `onReady` on its first frame), and why page containers must stay transparent.
 - `SceneAssetsContext` (environment map + halo texture) is built once per renderer in the canvas and reaches every view because views render through `View.Port`.
 - Views with a higher `index` draw later (the flying door uses `index={2}`).
 

@@ -160,15 +160,34 @@ function exitState(leaving: Leaving | undefined, slug: DoorSlug) {
   };
 }
 
+/**
+ * Door-shaped placeholder inside a cell's cover, roughly where the door's frame lands. It shimmers until the door is
+ * drawn, then cross-fades into it with the cover. Hidden on the covers that dismiss the other doors.
+ */
+function DoorPlaceholder({ hidden, loading }: { hidden: boolean; loading: boolean }) {
+  if (hidden) return null;
+
+  return (
+    <div
+      className={cn(
+        "absolute inset-x-[16%] top-[10%] bottom-[14%] bg-muted",
+        loading && "animate-shimmer bg-linear-to-l from-muted via-muted-foreground/15 to-muted bg-size-[200%_100%]",
+      )}
+    />
+  );
+}
+
 function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
   const ref = useRef<HTMLLIElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
   const [hovered, setHovered] = useState(false);
+  const [ready, setReady] = useState(false);
 
   const { chosen, dismissed, showView, showCover } = exitState(leaving, door.slug);
-  // A cover the color of the page hides the door: before it scrolls into view, and when another door is chosen.
-  const covered = !inView || dismissed;
+  // A cover the color of the page hides the door: before it scrolls into view, while the canvas is still loading it,
+  // and when another door is chosen.
+  const covered = !inView || !ready || dismissed;
   // Doors reveal one by one across a row.
   const stagger = leaving ? 0 : (index % 4) * 120;
 
@@ -189,7 +208,12 @@ function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
       >
         <div ref={boxRef} className="relative aspect-9/16">
           {showView && (
-            <DoorView slug={door.slug} open={hovered || chosen ? HOVER_OPEN : 0} className="absolute inset-0" />
+            <DoorView
+              slug={door.slug}
+              open={hovered || chosen ? HOVER_OPEN : 0}
+              onReady={() => setReady(true)}
+              className="absolute inset-0"
+            />
           )}
           {showCover && (
             <div
@@ -199,7 +223,9 @@ function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
                 leaving ? "duration-400" : "duration-700",
               )}
               style={{ transitionDelay: `${stagger}ms` }}
-            />
+            >
+              <DoorPlaceholder hidden={Boolean(leaving)} loading={!ready} />
+            </div>
           )}
         </div>
         <div

@@ -22,12 +22,22 @@ export interface DoorSceneProps {
   distance?: number;
   /** Width and height of the glow behind the door, in meters. */
   halo?: [number, number];
+  /** Called once, on the first frame the door is drawn. */
+  onReady?: () => void;
   children: ReactNode;
 }
 
 /** Camera, lights and the glow behind the door. Provides the damped open amount to the door's `Hinge`/`Slide` parts. */
-export function DoorScene({ open, from = open, distance = 6.4, halo = DEFAULT_HALO, children }: DoorSceneProps) {
+export function DoorScene({
+  open,
+  from = open,
+  distance = 6.4,
+  halo = DEFAULT_HALO,
+  onReady,
+  children,
+}: DoorSceneProps) {
   const valueRef = useRef(from);
+  const readyRef = useRef(false);
   const lightRef = useRef<PointLight>(null);
   const haloRef = useRef<MeshBasicMaterial>(null);
   const assets = use(SceneAssetsContext);
@@ -36,6 +46,10 @@ export function DoorScene({ open, from = open, distance = 6.4, halo = DEFAULT_HA
     valueRef.current = MathUtils.damp(valueRef.current, open, 3, delta);
     if (lightRef.current) lightRef.current.intensity = valueRef.current * 4;
     if (haloRef.current) haloRef.current.opacity = 0.12 + valueRef.current * 0.75;
+    if (!readyRef.current) {
+      readyRef.current = true;
+      onReady?.();
+    }
   });
 
   return (

@@ -2,6 +2,7 @@
   --animate-scroll-cue: scroll-cue 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   --animate-flash-out: flash-out 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-rise: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
 
   @keyframes scroll-cue {
     from {
@@ -16,6 +17,16 @@
   @keyframes flash-out {
     to {
       opacity: 0;
+    }
+  }
+
+  /* A highlight sweeping right to left across a 200%-wide gradient. */
+  @keyframes shimmer {
+    from {
+      background-position: -100% 0;
+    }
+    to {
+      background-position: 100% 0;
     }
   }
 

@@ -1,0 +1,37 @@
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+
+engineStrict: true
+
+minimumReleaseAgeExclude:
+  - "@hono/vercel@1.0.0"
+
+savePrefix: ""
+
+catalogs:
+  frontend:
+    "@base-ui/react": 1.9.0
+    "@tailwindcss/postcss": "4.3.3"
+    "babel-plugin-react-compiler": "1.0.0"
+    "class-variance-authority": "0.7.1"
+    "cn": "0.4.0"
+    "lucide-react": 1.54.0
+    "motion": 14.1.0
+    "next-themes": "0.4.6"
+    "next": 16.4.0
+    "react-dom": "19.3.0"
+    "react": "19.3.0"
+    "shadcn": 4.21.4
+    "tailwindcss": "4.3.3"
+    "tw-animate-css": "1.4.0"
+  quality:
+    "@fullstacksjs/eslint-config": "14.8.1"
+    "@rabits/tsconfig": "0.2.2"
+    "@types/node": 26.6.4
+    "@types/react-dom": "19.3.0"
+    "@types/react": "19.3.0"
+    "eslint": 10.12.0
+    "prettier": "3.9.9"
+    "typescript": "6.0.3"

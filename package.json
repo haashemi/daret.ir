@@ -1,0 +1,48 @@
+{
+  "name": "keyeh.ir",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@12.6.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:migrate": "drizzle-kit migrate",
+    "db:generate": "drizzle-kit generate",
+    "db:backup": "node --env-file-if-exists=.env scripts/db-backup.mts",
+    "db:restore": "node --env-file-if-exists=.env scripts/db-restore.mts",
+    "storage:backup": "node --env-file-if-exists=.env scripts/storage-backup.mts",
+    "storage:restore": "node --env-file-if-exists=.env scripts/storage-restore.mts",
+    "storage:cleanup": "node --env-file-if-exists=.env scripts/storage-cleanup.mts",
+    "archive": "rm -rf .output deploy.zip && cp -r ./.next/standalone ./.output && cp -r ./public/ ./.output/public && cp -r ./.next/static ./.output/.next/static && cp -r scripts ./.output/scripts && zip -ryq deploy.zip .output && rm -rf .output"
+  },
+  "dependencies": {
+    "@base-ui/react": "catalog:frontend",
+    "class-variance-authority": "catalog:frontend",
+    "cn": "catalog:frontend",
+    "lucide-react": "catalog:frontend",
+    "motion": "catalog:frontend",
+    "next": "catalog:frontend",
+    "next-themes": "catalog:frontend",
+    "react": "catalog:frontend",
+    "react-dom": "catalog:frontend",
+    "shadcn": "catalog:frontend",
+    "tw-animate-css": "catalog:frontend"
+  },
+  "devDependencies": {
+    "@fullstacksjs/eslint-config": "catalog:quality",
+    "@rabits/tsconfig": "catalog:quality",
+    "@tailwindcss/postcss": "catalog:frontend",
+    "@types/node": "catalog:quality",
+    "@types/react": "catalog:quality",
+    "@types/react-dom": "catalog:quality",
+    "babel-plugin-react-compiler": "catalog:frontend",
+    "eslint": "catalog:quality",
+    "prettier": "catalog:quality",
+    "tailwindcss": "catalog:frontend",
+    "typescript": "catalog:quality"
+  }
+}

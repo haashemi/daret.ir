@@ -1,0 +1,67 @@
+/* When only named elements change, React cancels the root snapshot and animates
+   ::view-transition down to 0x0 so clicks pass through. Browsers then paint none of
+   the named groups either, so keep it full-size (!important beats the animation)
+   and let clicks through with pointer-events instead. */
+::view-transition {
+  width: auto !important;
+  height: auto !important;
+  pointer-events: none;
+}
+
+/* Directional slide: "next" pushes content right, "previous" pushes it left. */
+::view-transition-group(.slide-next),
+::view-transition-group(.slide-previous) {
+  animation-duration: 300ms;
+}
+::view-transition-old(.slide-next),
+::view-transition-new(.slide-next) {
+  --slide-x: 2rem;
+}
+::view-transition-old(.slide-previous),
+::view-transition-new(.slide-previous) {
+  --slide-x: -2rem;
+}
+::view-transition-old(.slide-next),
+::view-transition-old(.slide-previous) {
+  animation: 300ms ease-in both slide-out;
+}
+::view-transition-new(.slide-next),
+::view-transition-new(.slide-previous) {
+  animation: 300ms ease-out both slide-in;
+}
+
+@keyframes slide-out {
+  to {
+    opacity: 0;
+    filter: blur(6px);
+    translate: var(--slide-x);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    translate: calc(var(--slide-x) * -1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Event page title when it has no list item to morph from. */
+::view-transition-new(.fade-up) {
+  animation: 500ms ease-out both fade-up;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    translate: 0 1rem;
+  }
+}

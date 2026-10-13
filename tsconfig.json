@@ -1,0 +1,18 @@
+{
+  "extends": ["@rabits/tsconfig/react"],
+  "compilerOptions": {
+    "target": "es2022",
+    "plugins": [{ "name": "next" }],
+    "paths": { "@/*": ["./*"] }
+  },
+  "include": [
+    ".next/dev/types/**/*.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.mts",
+    "**/*.tsx",
+    "**/*.mjs",
+    "next-env.d.ts"
+  ],
+  "exclude": ["node_modules"]
+}

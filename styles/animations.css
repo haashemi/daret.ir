@@ -1,0 +1,36 @@
+@theme inline {
+  --animate-day-image-cycle: day-image-cycle var(--day-image-cycle-fade, 0.9s) linear forwards;
+  --animate-day-image-cycle-out: day-image-cycle-out var(--day-image-cycle-fade, 0.9s) linear forwards;
+
+  --animate-marquee: marquee var(--marquee-duration) ease-in-out infinite alternate;
+
+  /* Holds at each end (0-15%, 85-100%) so the reader can catch both ends of the text. */
+  @keyframes marquee {
+    0%,
+    15% {
+      transform: translateX(0);
+    }
+    85%,
+    100% {
+      transform: translateX(var(--marquee-distance));
+    }
+  }
+
+  @keyframes day-image-cycle {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes day-image-cycle-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+}

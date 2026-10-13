@@ -44,6 +44,11 @@ Modified clicks (new tab etc.) and `prefers-reduced-motion` skip the sequence an
 
 `app/opengraph-image.png` (1200x630) and `app/twitter-image.png` (1200x600), with `*.alt.txt`, are static files picked up by Next's file convention for every route. They are screenshots of the real site (hero type + three grid cells with live 3D doors), not `next/og`: satori can't shape Persian text and doesn't read the woff2 fonts. To regenerate, temporarily add a route that renders that composition `fixed inset-0`, screenshot it in a browser at both sizes, and delete the route.
 
+## Icons
+
+- `app/icon.tsx`: 512px PNG via `next/og`, drawn as an SVG on a 32-unit grid (an ajar walnut door with the light behind it). Coordinates stay on even units so it stays crisp at 16px. `dynamic = "force-static"` is required by `output: "export"`.
+- `app/favicon.ico`: the same SVG at 16/32/48px as 32-bit BGRA bitmap entries (Next's ICO decoder rejects RGB PNG entries). Regenerate it whenever `icon.tsx` changes: render the SVG to a canvas at each size and pack the pixels into an ICO.
+
 ## Known config issue
 
 `next.config.ts` combines `output: "export"` with `cacheComponents`; Next's export step rejects that (`Invariant: PPR cannot be enabled in export mode`) after prerendering succeeds. Pick one: drop `cacheComponents` (and the `instant` exports) for a static `out/`, or drop `output: "export"` and serve with `next start` / standalone.

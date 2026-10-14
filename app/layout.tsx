@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 
 import { ViewTransition } from "react";
 
+import { Footer } from "@/components/footer";
 import { Providers } from "@/components/providers";
 import { SceneCanvas } from "@/components/three/scene-canvas";
 import { config } from "@/lib/config";
@@ -35,11 +36,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <Providers>
           <SceneCanvas />
-          <div className="flex min-h-svh flex-col items-center gap-6">
-            <ViewTransition name="app-page">
-              <main className="container flex max-w-7xl flex-1 flex-col gap-6 px-4">{children}</main>
-            </ViewTransition>
-          </div>
+          <ViewTransition name="app-page">
+            <div className="min-h-screen">
+              <main className="container flex max-w-7xl flex-1 flex-col gap-6 px-4 pb-8">{children}</main>
+              <Footer />
+            </div>
+          </ViewTransition>
         </Providers>
       </body>
     </html>

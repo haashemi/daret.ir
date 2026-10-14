@@ -22,6 +22,7 @@
     "next-themes": "catalog:frontend",
     "react": "catalog:frontend",
     "react-dom": "catalog:frontend",
+    "react-icons": "5.7.0",
     "shadcn": "catalog:frontend",
     "three": "catalog:frontend",
     "tw-animate-css": "catalog:frontend"

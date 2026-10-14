@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   cacheComponents: false,
   partialPrefetching: false,
   poweredByHeader: false,
+  devIndicators: { position: "top-right" },
 };
 
 export default nextConfig;

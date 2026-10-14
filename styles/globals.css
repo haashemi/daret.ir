@@ -3,8 +3,29 @@
 @import "shadcn/tailwind.css";
 
 @import "./theme.css";
-@import "./base.css";
 @import "./animations.css";
 @import "./view-transitions.css";
 
 @custom-variant dark (&:is(.dark *));
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    @apply scrollbar-thin;
+
+    ::selection {
+      @apply bg-primary text-background;
+    }
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply scroll-smooth font-sans antialiased;
+    @apply scrollbar-thumb-primary scrollbar-track-background scrollbar-gutter-stable;
+  }
+}

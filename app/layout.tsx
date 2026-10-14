@@ -8,7 +8,7 @@ import { Providers } from "@/components/providers";
 import { SceneCanvas } from "@/components/three/scene-canvas";
 import { config } from "@/lib/config";
 import { openGraph, twitter } from "@/lib/config/metadata";
-import { danaFont } from "@/styles/fonts";
+import { vazirmatnFont } from "@/styles/fonts";
 
 export const metadata: Metadata = {
   metadataBase: config.appHost,
@@ -32,11 +32,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fa" dir="rtl" className={danaFont.variable} data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="fa" dir="rtl" className={vazirmatnFont.variable} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body>
         <Providers>
           <SceneCanvas />
-          <ViewTransition name="app-page">
+          <ViewTransition>
             <div className="min-h-screen">
               <main className="container flex max-w-7xl flex-1 flex-col gap-6 px-4 pb-8">{children}</main>
               <Footer />

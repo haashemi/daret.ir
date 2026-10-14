@@ -11,3 +11,8 @@
     animation: none !important;
   }
 }
+
+/* Page swap: cross-fade only, no size/position morph of the group. */
+::view-transition-group(.page-fade) {
+  animation: none;
+}

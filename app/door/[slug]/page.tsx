@@ -35,7 +35,7 @@ export default async function DoorPage({ params }: PageProps<"/door/[slug]">) {
   const door = findDoor((await params).slug);
   if (!door) notFound();
 
-  const lines = ["حالا پاشو و", `در ${door.name}‌ت`, "رو بذار!"];
+  const lines = ["در جدید خدمت شما", `در ${door.name}‌!`, "حالا برو درتو بذار"];
 
   return (
     <>

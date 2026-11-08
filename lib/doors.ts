@@ -35,6 +35,12 @@ export const doors = [
   { slug: "hell", name: "جهنم" },
   { slug: "boss", name: "اتاق رئیس" },
   { slug: "nested", name: "تودرتو" },
+  { slug: "pot", name: "قابلمه" },
+  { slug: "castle", name: "قلعه" },
+  { slug: "bookshelf", name: "کتابخانه مخفی" },
+  { slug: "airplane", name: "هواپیما" },
+  { slug: "cuckoo", name: "ساعت کوکو" },
+  { slug: "tent", name: "چادر مسافرتی" },
 ] as const;
 
 export type Door = (typeof doors)[number];

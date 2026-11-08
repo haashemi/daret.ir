@@ -2,14 +2,18 @@ import type { ComponentType } from "react";
 
 import type { DoorSlug } from "@/lib/doors";
 
+import { Airplane } from "./airplane";
 import { Barn } from "./barn";
+import { Bookshelf } from "./bookshelf";
 import { Boss } from "./boss";
 import { Bus } from "./bus";
 import { Cardboard } from "./cardboard";
+import { Castle } from "./castle";
 import { CatFlap } from "./cat-flap";
 import { Chocolate } from "./chocolate";
 import { Closet } from "./closet";
 import { Container } from "./container";
+import { Cuckoo } from "./cuckoo";
 import { Dutch } from "./dutch";
 import { Elevator } from "./elevator";
 import { Fridge } from "./fridge";
@@ -24,6 +28,7 @@ import { Paranoid } from "./paranoid";
 import { Persian } from "./persian";
 import { PhoneBooth } from "./phone-booth";
 import { Pixel } from "./pixel";
+import { Pot } from "./pot";
 import { Pride } from "./pride";
 import { Prison } from "./prison";
 import { Restroom } from "./restroom";
@@ -33,6 +38,7 @@ import { Scifi } from "./scifi";
 import { Security } from "./security";
 import { Shoji } from "./shoji";
 import { Shutter } from "./shutter";
+import { Tent } from "./tent";
 import { Vault } from "./vault";
 import { Walnut } from "./walnut";
 import { WashingMachine } from "./washing-machine";
@@ -74,4 +80,10 @@ export const models: Record<DoorSlug, ComponentType> = {
   hell: Hell,
   boss: Boss,
   nested: Nested,
+  pot: Pot,
+  castle: Castle,
+  bookshelf: Bookshelf,
+  airplane: Airplane,
+  cuckoo: Cuckoo,
+  tent: Tent,
 };

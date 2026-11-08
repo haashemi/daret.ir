@@ -1,11 +1,5 @@
 # daret.ir
 
-«دَرِت», a meme dressed as a luxury door maker. Pick a door from the collection, walk through it, and get told to put it where it belongs.
+![daret.ir](app/opengraph-image.png)
 
-```sh
-pnpm install
-pnpm dev     # http://localhost:3000
-pnpm build   # static export to out/
-```
-
-Architecture and conventions: [.agents/docs](.agents/docs/architecture.md).
+A meme dressed as a luxury door maker. Pick a door from the collection, walk through it, and find out where it belongs.

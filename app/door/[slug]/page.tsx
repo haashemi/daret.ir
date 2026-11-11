@@ -26,10 +26,12 @@ export async function generateMetadata(
   // Setting `openGraph`/`twitter` drops the inherited file-based images, so carry them over.
   const { openGraph: parentOpenGraph, twitter: parentTwitter } = await parent;
   const title = `در ${door.name}`;
+  const url = `/door/${door.slug}`;
 
   return {
     title,
-    openGraph: { ...openGraph, title, images: parentOpenGraph?.images ?? [] },
+    alternates: { canonical: url },
+    openGraph: { ...openGraph, title, url, images: parentOpenGraph?.images ?? [] },
     twitter: { ...twitter, title, images: parentTwitter?.images ?? [] },
   };
 }

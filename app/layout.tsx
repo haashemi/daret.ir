@@ -12,6 +12,7 @@ import { vazirmatnFont } from "@/styles/fonts";
 
 export const metadata: Metadata = {
   metadataBase: config.appHost,
+  alternates: { canonical: "/" },
   title: { default: config.appName, template: `%s | ${config.appName}` },
   description: config.appDescription,
   applicationName: config.appName,
@@ -23,11 +24,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: "light dark",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
-  ],
+  colorScheme: "dark",
+  themeColor: "#09090b",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

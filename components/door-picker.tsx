@@ -11,6 +11,7 @@ import { useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { Door, DoorSlug } from "@/lib/doors";
 
 import { DoorView } from "@/components/door-view";
+import { useSceneFailed } from "@/components/three/scene-status";
 import { doors } from "@/lib/doors";
 
 interface Box {
@@ -68,6 +69,7 @@ function centeredBox(): Box {
 export function DoorPicker({ children }: { children: ReactNode }) {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
+  const sceneFailed = useSceneFailed();
   const pageRef = useRef<HTMLDivElement>(null);
   const [leaving, setLeaving] = useState<Leaving>();
   const [origin, setOrigin] = useState("50% 50%");
@@ -78,7 +80,7 @@ export function DoorPicker({ children }: { children: ReactNode }) {
 
   async function choose(event: MouseEvent, slug: DoorSlug, box: HTMLElement) {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    if (reduceMotion) return;
+    if (reduceMotion || sceneFailed) return;
     event.preventDefault();
     if (leaving) return;
 
@@ -183,6 +185,7 @@ function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
   const inView = useInView(ref, { once: true, amount: 0.2 });
   const [hovered, setHovered] = useState(false);
   const [ready, setReady] = useState(false);
+  const sceneFailed = useSceneFailed();
 
   const { chosen, dismissed, showView, showCover } = exitState(leaving, door.slug);
   // A cover the color of the page hides the door: before it scrolls into view, while the canvas is still loading it,
@@ -224,7 +227,7 @@ function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
               )}
               style={{ transitionDelay: `${stagger}ms` }}
             >
-              <DoorPlaceholder hidden={Boolean(leaving)} loading={!ready} />
+              <DoorPlaceholder hidden={Boolean(leaving)} loading={!ready && !sceneFailed} />
             </div>
           )}
         </div>

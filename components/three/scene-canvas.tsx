@@ -1,12 +1,15 @@
 "use client";
 
+import type { ReactNode } from "react";
 import type { Texture } from "three";
 
 import { View } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
-import { createContext, useMemo } from "react";
+import { Component, createContext, useMemo } from "react";
 import { CanvasTexture, PMREMGenerator, SRGBColorSpace } from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+
+import { markSceneFailed } from "./scene-status";
 
 /** Textures every door scene shares, built once per renderer. */
 export const SceneAssetsContext = createContext<{ environment: Texture; halo: Texture } | null>(null);
@@ -47,6 +50,23 @@ function Port() {
   );
 }
 
+/** Without WebGL the renderer throws while mounting. Drop the canvas and let the page carry on without doors. */
+class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  override state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  override componentDidCatch() {
+    markSceneFailed();
+  }
+
+  override render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
 /**
  * The app's only WebGL canvas, fixed behind the page. Every `<DoorView>` is a DOM box that
  * drei's `View` tracks and draws into this canvas, so anything with a background that sits
@@ -54,8 +74,10 @@ function Port() {
  */
 export function SceneCanvas() {
   return (
-    <Canvas style={{ position: "fixed", inset: 0, zIndex: -1, pointerEvents: "none" }} dpr={[1, 2]} aria-hidden>
-      <Port />
-    </Canvas>
+    <SceneBoundary>
+      <Canvas style={{ position: "fixed", inset: 0, zIndex: -1, pointerEvents: "none" }} dpr={[1, 2]} aria-hidden>
+        <Port />
+      </Canvas>
+    </SceneBoundary>
   );
 }

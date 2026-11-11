@@ -19,6 +19,7 @@ A Persian (RTL, `lang="fa"`, forced dark theme) single-purpose meme site: a luxu
 - **The canvas is under the DOM.** Any element with a background above a door hides it. That's how the grid's reveal/dismiss "covers" work (each cover also holds a shimmering door placeholder until `DoorScene` calls `onReady` on its first frame), and why page containers must stay transparent.
 - `SceneAssetsContext` (environment map + halo texture) is built once per renderer in the canvas and reaches every view because views render through `View.Port`.
 - Views with a higher `index` draw later (the flying door uses `index={2}`).
+- If the canvas can't start (no WebGL), `SceneBoundary` in `scene-canvas.tsx` drops it and sets the flag read by `useSceneFailed()` (`components/three/scene-status.ts`). Cells then keep a static placeholder and clicks navigate without the exit sequence.
 
 `components/three/door-scene.tsx` wraps each door: camera (fov 25, slightly off to the right so outward-swinging doors reveal the light), lights, the halo, and `OpenContext`, a damped `{ current: 0..1 }` the door parts read in `useFrame`. Props: `open` (target), `from` (initial), `distance`, `halo`.
 

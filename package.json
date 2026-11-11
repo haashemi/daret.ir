@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "archive": "rm -rf .output deploy.zip && cp -r ./.next/standalone ./.output && cp -r ./public/ ./.output/public && cp -r ./.next/static ./.output/.next/static && cp -r scripts ./.output/scripts && zip -ryq deploy.zip .output && rm -rf .output"
   },
   "dependencies": {

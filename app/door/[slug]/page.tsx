@@ -1,10 +1,13 @@
 import type { Metadata, ResolvingMetadata } from "next";
 
 import { cn } from "cn";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { DoorView } from "@/components/door-view";
+import { RandomDoorButton } from "@/components/random-door-button";
 import { ShareButton } from "@/components/share-button";
+import { buttonVariants } from "@/components/ui/button";
 import { openGraph, twitter } from "@/lib/config/metadata";
 import { doors, findDoor } from "@/lib/doors";
 
@@ -63,7 +66,13 @@ export default async function DoorPage({ params }: PageProps<"/door/[slug]">) {
               </span>
             ))}
           </h1>
-          <ShareButton name={door.name} className="animate-rise [animation-delay:2.2s]" />
+          <div className="flex animate-rise flex-wrap items-center gap-2 [animation-delay:2.2s]">
+            <ShareButton name={door.name} />
+            <RandomDoorButton current={door.slug} />
+            <Link href="/" className={buttonVariants({ variant: "ghost", size: "lg" })}>
+              همه‌ی درها
+            </Link>
+          </div>
         </div>
       </section>
       <div aria-hidden className="pointer-events-none fixed inset-0 animate-flash-out bg-light" />

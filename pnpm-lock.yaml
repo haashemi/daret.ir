@@ -278,9 +278,6 @@ importers:
       react-icons:
         specifier: 5.7.0
         version: 5.7.0(react@19.3.1)
-      shadcn:
-        specifier: catalog:frontend
-        version: 4.23.0(supports-color@7.2.0)
       three:
         specifier: catalog:frontend
         version: 0.187.0
@@ -318,6 +315,9 @@ importers:
       prettier:
         specifier: catalog:quality
         version: 3.9.10
+      shadcn:
+        specifier: catalog:frontend
+        version: 4.23.0(supports-color@7.2.0)
       tailwindcss:
         specifier: catalog:frontend
         version: 4.3.5

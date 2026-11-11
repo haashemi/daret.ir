@@ -9,7 +9,7 @@ A Persian (RTL, `lang="fa"`, forced dark theme) single-purpose meme site: a luxu
 | `/`            | `app/page.tsx`             | Server hero, passed as `children` to the client `DoorPicker` (grid + exit sequence).  |
 | `/door/[slug]` | `app/door/[slug]/page.tsx` | Result page. `generateStaticParams` from `lib/doors.ts`; unknown slugs `notFound()`.  |
 
-- Next 16 with `cacheComponents`: `dynamicParams` is not allowed (use `notFound()`), and pages that read `params` outside `<Suspense>` export `instant = false`.
+- Static export (`output: "export"`, `cacheComponents: false`): every door page is prerendered from `generateStaticParams`, and unknown slugs call `notFound()`.
 - Next keeps visited pages mounted but hidden (`<Activity>`), so transient UI state is reset in a `useLayoutEffect` cleanup (see `DoorPicker`).
 
 ## 3D rendering: one canvas, many views
@@ -39,7 +39,7 @@ Modified clicks (new tab etc.) and `prefers-reduced-motion` skip the sequence an
 - Tailwind v4 + shadcn (`base-nova`, Base UI). Tokens in `styles/theme.css`; `--radius: 0` (sharp, border-line design).
 - `--light` / `bg-light` is the color behind every door. Keep it in sync with `LIGHT_COLOR` in `components/three/parts.tsx`.
 - Animations (`scroll-cue`, `flash-out`, `rise`) live in `styles/animations.css`.
-- Font: Dana (`styles/fonts.ts`). Persian digits via `toLocaleString("fa-IR")`.
+- Font: Vazirmatn (`styles/fonts.ts`). Persian digits via `toLocaleString("fa-IR")`.
 
 ## Social images
 
@@ -59,7 +59,3 @@ Door pages set their own `openGraph`/`twitter` titles. Setting those objects rep
 
 - `app/icon.tsx`: 512px PNG via `next/og`, drawn as an SVG on a 32-unit grid (an ajar walnut door with the light behind it). Coordinates stay on even units so it stays crisp at 16px. `dynamic = "force-static"` is required by `output: "export"`.
 - `app/favicon.ico`: the same SVG at 16/32/48px as 32-bit BGRA bitmap entries (Next's ICO decoder rejects RGB PNG entries). Regenerate it whenever `icon.tsx` changes: render the SVG to a canvas at each size and pack the pixels into an ICO.
-
-## Known config issue
-
-`next.config.ts` combines `output: "export"` with `cacheComponents`; Next's export step rejects that (`Invariant: PPR cannot be enabled in export mode`) after prerendering succeeds. Pick one: drop `cacheComponents` (and the `instant` exports) for a static `out/`, or drop `output: "export"` and serve with `next start` / standalone.

@@ -1,6 +1,6 @@
 "use client";
 
-import type { MouseEvent, ReactNode } from "react";
+import type { MouseEvent, ReactNode, RefObject } from "react";
 
 import { cn } from "cn";
 import { motion, useInView, useReducedMotion } from "motion/react";
@@ -48,6 +48,19 @@ const getShuffled = () =>
 const getCatalog = () => doors;
 // Nothing to subscribe to: the order never changes after the first read.
 const subscribe = () => () => undefined;
+
+// Touch devices have no hover, so their doors open as they cross the middle of the screen instead.
+const NO_HOVER = "(hover: none)";
+
+const subscribeNoHover = (onChange: () => void) => {
+  const query = window.matchMedia(NO_HOVER);
+  query.addEventListener("change", onChange);
+
+  return () => query.removeEventListener("change", onChange);
+};
+
+const getNoHover = () => window.matchMedia(NO_HOVER).matches;
+const getNoHoverOnServer = () => false;
 
 function toBox({ top, left, width, height }: DOMRect): Box {
   return { top, left, width, height };
@@ -180,6 +193,15 @@ function DoorPlaceholder({ hidden, loading }: { hidden: boolean; loading: boolea
   );
 }
 
+/** Whether a cell's door stands ajar: `active` (pointed at, focused or chosen), or on touch devices while it crosses the middle of the screen. */
+function useAjar(boxRef: RefObject<HTMLDivElement | null>, active: boolean) {
+  const noHover = useSyncExternalStore(subscribeNoHover, getNoHover, getNoHoverOnServer);
+  // A band 20% of the viewport tall, centered: with two columns that is one row at a time.
+  const centered = useInView(boxRef, { margin: "-40% 0px -40% 0px" });
+
+  return active || (noHover && centered);
+}
+
 function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
   const ref = useRef<HTMLLIElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -189,6 +211,7 @@ function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
   const sceneFailed = useSceneFailed();
 
   const { chosen, dismissed, showView, showCover } = exitState(leaving, door.slug);
+  const ajar = useAjar(boxRef, hovered || chosen);
   // A cover the color of the page hides the door: before it scrolls into view, while the canvas is still loading it,
   // and when another door is chosen.
   const covered = !inView || !ready || dismissed;
@@ -203,7 +226,7 @@ function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
       <Link
         href={`/door/${door.slug}`}
         aria-label={`در ${door.name}`}
-        className="group block p-3 outline-none md:p-6"
+        className="group block p-3 -outline-offset-2 outline-light focus-visible:outline-2 md:p-6"
         onClick={(event) => boxRef.current && onChoose(event, door.slug, boxRef.current)}
         onPointerEnter={(event) => event.pointerType === "mouse" && setHovered(true)}
         onPointerLeave={() => setHovered(false)}
@@ -214,7 +237,7 @@ function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
           {showView && (
             <DoorView
               slug={door.slug}
-              open={hovered || chosen ? HOVER_OPEN : 0}
+              open={ajar ? HOVER_OPEN : 0}
               onReady={() => setReady(true)}
               className="absolute inset-0"
             />

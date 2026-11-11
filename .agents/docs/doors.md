@@ -8,7 +8,7 @@ Models: `components/doors/<slug>.tsx`, registered by slug in `components/doors/i
 1. Add `{ slug, name }` to `lib/doors.ts`.
 2. Create `components/doors/<slug>.tsx` exporting a component with no props.
 3. Register it in `components/doors/index.ts`.
-4. Grid stays even at 3 and 5 columns only for multiples of 15; check the layout if the count changes.
+4. Any count works: `SuggestCell` in `components/door-picker.tsx` fills whatever columns are left in the last row.
 
 ## Coordinates and framing
 

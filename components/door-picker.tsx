@@ -113,6 +113,7 @@ export function DoorPicker({ children }: { children: ReactNode }) {
           {order.map((door, index) => (
             <DoorCell key={door.slug} door={door} index={index} leaving={leaving} onChoose={choose} />
           ))}
+          <SuggestCell />
         </ul>
       </div>
 
@@ -244,6 +245,43 @@ function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
           </span>
         </div>
       </Link>
+    </li>
+  );
+}
+
+// Columns left over in the last row, per breakpoint (2 / 3 / 5 columns). Full class names so Tailwind can see them.
+const FILL_BASE = ["hidden", "flex col-span-1"] as const;
+const FILL_MD = ["md:hidden", "md:flex md:col-span-1", "md:flex md:col-span-2"] as const;
+const FILL_XL = [
+  "xl:hidden",
+  "xl:flex xl:col-span-1",
+  "xl:flex xl:col-span-2",
+  "xl:flex xl:col-span-3",
+  "xl:flex xl:col-span-4",
+] as const;
+
+const left = (columns: number) => (columns - (doors.length % columns)) % columns;
+
+/** Closes the last row of the grid, whatever the number of doors, and asks for the next one. */
+function SuggestCell() {
+  return (
+    <li
+      className={cn(
+        "flex-col items-center justify-center gap-4 border-e border-b p-6 text-center transition duration-500 group-data-leaving/page:border-transparent group-data-leaving/page:opacity-0",
+        FILL_BASE[left(2)],
+        FILL_MD[left(3)],
+        FILL_XL[left(5)],
+      )}
+    >
+      <p className="text-sm font-medium md:text-base">درِ دلخواهت اینجا نیست؟</p>
+      <a
+        href="https://github.com/haashemi/daret.ir/issues/new"
+        target="_blank"
+        rel="noreferrer noopener"
+        className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
+      >
+        پیشنهادش بده
+      </a>
     </li>
   );
 }

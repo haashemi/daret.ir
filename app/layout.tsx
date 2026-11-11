@@ -1,10 +1,11 @@
 import "@/styles/globals.css";
 import type { Metadata, Viewport } from "next";
 
+import { cn } from "cn";
 import { ViewTransition } from "react";
 
 import { Footer } from "@/components/footer";
-import { Providers } from "@/components/providers";
+import { HistoryTransitions } from "@/components/history-transitions";
 import { SceneCanvas } from "@/components/three/scene-canvas";
 import { config } from "@/lib/config";
 import { openGraph, twitter } from "@/lib/config/metadata";
@@ -30,17 +31,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fa" dir="rtl" className={vazirmatnFont.variable} data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="fa" dir="rtl" className={cn(vazirmatnFont.variable, "dark")} data-scroll-behavior="smooth">
       <body>
-        <Providers>
-          <SceneCanvas />
-          <ViewTransition default="page-fade">
-            <div className="min-h-screen">
-              <main className="container mx-auto flex max-w-7xl flex-1 flex-col gap-6 px-4 pb-8">{children}</main>
-              <Footer />
-            </div>
-          </ViewTransition>
-        </Providers>
+        <SceneCanvas />
+        <ViewTransition default="page-fade">
+          <div className="min-h-screen">
+            <main className="container mx-auto flex max-w-7xl flex-1 flex-col gap-6 px-4 pb-8">{children}</main>
+            <Footer />
+          </div>
+        </ViewTransition>
+        <HistoryTransitions />
       </body>
     </html>
   );

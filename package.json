@@ -20,7 +20,6 @@
     "lucide-react": "catalog:frontend",
     "motion": "catalog:frontend",
     "next": "catalog:frontend",
-    "next-themes": "catalog:frontend",
     "react": "catalog:frontend",
     "react-dom": "catalog:frontend",
     "react-icons": "5.7.0",

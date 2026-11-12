@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { ArrowUpLeft, Heart } from "lucide-react";
+import Link from "next/link";
 import { FaGithub, FaTelegram } from "react-icons/fa6";
 
 interface FooterLink {
@@ -44,11 +45,9 @@ const productLinks: FooterLink[] = [
   ),
 }));
 
-const year = new Intl.DateTimeFormat("fa-IR-u-ca-persian", { year: "numeric" }).format(new Date());
-
 export function Footer() {
   return (
-    <footer className="relative isolate container mx-auto max-w-7xl px-4 pt-24">
+    <footer className="relative isolate container mx-auto max-w-7xl px-4 pt-24 pb-4 sm:px-0">
       {/* Light leaking along the footer's top edge, like the gap under a closed door. */}
       <div
         aria-hidden
@@ -58,7 +57,9 @@ export function Footer() {
 
       <div className="grid border-s md:grid-cols-4">
         <div className="flex flex-col justify-between gap-5 border-e border-b px-6 py-7 md:col-span-2 md:gap-8 md:p-8">
-          <p className="text-6xl leading-none font-black md:text-8xl">دَرِت</p>
+          <Link href="/" className="w-fit text-6xl leading-none font-black md:text-8xl">
+            دَرِت
+          </Link>
           <p className="max-w-xs text-sm/loose text-muted-foreground">
             جایی برای وقتی که دیگه وقتشه درت رو بذاری. ساخته شده به شوخی توسط{" "}
             <a
@@ -74,11 +75,6 @@ export function Footer() {
 
         <LinkList title="راه‌های ارتباطی" links={contactLinks} />
         <LinkList title="دیگر محصولات" links={productLinks} />
-      </div>
-
-      <div className="flex flex-col gap-1.5 pt-5 pb-8 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between md:pt-6">
-        <p>تمامی درها محفوظ است · {year}</p>
-        <p>هیچ دری در ساخت این سایت آسیب ندید</p>
       </div>
     </footer>
   );
@@ -116,13 +112,13 @@ function FooterLinkRow({ href, label, detail, lead }: FooterLink) {
         <ArrowUpLeft
           aria-hidden
           strokeWidth={1.75}
-          className="size-3.5 transition-transform duration-200 ease-snappy motion-safe:group-hover:-translate-0.5 motion-safe:group-focus-visible:-translate-0.5"
+          className="ease-snappy size-3.5 transition-transform duration-200 motion-safe:group-hover:-translate-0.5 motion-safe:group-focus-visible:-translate-0.5"
         />
       </span>
       {/* Grows from the row's start edge; under reduced motion it fades in instead. */}
       <span
         aria-hidden
-        className="absolute inset-x-0 -bottom-px h-px origin-right scale-x-0 bg-light transition-[scale,opacity] duration-200 ease-snappy group-hover:scale-x-100 group-focus-visible:scale-x-100 motion-reduce:scale-x-100 motion-reduce:opacity-0 motion-reduce:group-hover:opacity-100"
+        className="ease-snappy absolute inset-x-0 -bottom-px h-px origin-right scale-x-0 bg-light transition-[scale,opacity] duration-200 group-hover:scale-x-100 group-focus-visible:scale-x-100 motion-reduce:scale-x-100 motion-reduce:opacity-0 motion-reduce:group-hover:opacity-100"
       />
     </a>
   );

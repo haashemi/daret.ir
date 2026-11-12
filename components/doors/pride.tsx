@@ -1,103 +1,149 @@
-import { MeshStandardMaterial, Path, Shape } from "three";
+import { MeshPhysicalMaterial, MeshStandardMaterial, Path, Shape } from "three";
 
 import { Backlight, Box, Cylinder, Frame, H, Hinge, W } from "@/components/three/parts";
 
-const paint = new MeshStandardMaterial({ color: "#e8e6e1", metalness: 0.5, roughness: 0.35 });
-const rubber = new MeshStandardMaterial({ color: "#141414", roughness: 0.9 });
-const glass = new MeshStandardMaterial({
-  color: "#24343c",
-  roughness: 0.05,
-  metalness: 0.3,
+// Glossy white with a clear coat, like most Prides on the road.
+const paint = new MeshPhysicalMaterial({
+  color: "#ecebe6",
+  metalness: 0.15,
+  roughness: 0.35,
+  clearcoat: 1,
+  clearcoatRoughness: 0.08,
+});
+const crease = new MeshStandardMaterial({ color: "#c9c8c2", roughness: 0.5 });
+const sash = new MeshStandardMaterial({ color: "#151515", roughness: 0.55 });
+const rubber = new MeshStandardMaterial({ color: "#1b1b1b", roughness: 0.9 });
+const glass = new MeshPhysicalMaterial({
+  color: "#2b3b42",
+  roughness: 0.03,
+  metalness: 0.2,
   transparent: true,
-  opacity: 0.55,
+  opacity: 0.5,
 });
 const chrome = new MeshStandardMaterial({ color: "#d9dde2", metalness: 1, roughness: 0.15 });
 const rust = new MeshStandardMaterial({ color: "#8a4a1c", roughness: 1 });
 const blue = new MeshStandardMaterial({ color: "#1f4fa8", roughness: 0.5 });
 const plate = new MeshStandardMaterial({ color: "#f4f4f0", roughness: 0.4 });
+const ink = new MeshStandardMaterial({ color: "#222222", roughness: 0.6 });
 const block = new MeshStandardMaterial({ color: "#6d6a63", roughness: 0.9 });
 
-const LH = H - 0.01;
-const SILL = 0.12;
-const TOP = LH / 2 - 0.1;
+// Leaf coordinates: `x` from the hinge (front of the car) to the latch (rear), `y` centered on the opening.
+const BOTTOM = -(H - 0.01) / 2;
+const TOP = (H - 0.01) / 2;
+const FRONT = 0.005;
+const REAR = W - 0.005;
+// Belt line: painted body below, the black window sash above.
+const BELT = 0.12;
+// The A-pillar rakes back from the belt; the sash rounds off at the top rear corner.
+const RAKE = 0.3;
+const CORNER = 0.14;
+const SASH = 0.05;
 
-/** The window outline grown by `grow`, raked on the hinge (front) side like an A-pillar. */
-function windowPath(grow: number) {
+const body = new Shape()
+  .moveTo(FRONT, BOTTOM + 0.1)
+  .quadraticCurveTo(FRONT, BOTTOM, FRONT + 0.1, BOTTOM)
+  .lineTo(REAR - 0.06, BOTTOM)
+  .quadraticCurveTo(REAR, BOTTOM, REAR, BOTTOM + 0.06)
+  .lineTo(REAR, BELT)
+  .lineTo(FRONT, BELT)
+  .closePath();
+
+/** The window opening (or the sash around it, grown by `grow`). */
+function windowOutline(grow: number) {
   return new Path()
-    .moveTo(0.08 - grow, SILL - grow)
-    .lineTo(W - 0.08 + grow, SILL - grow)
-    .lineTo(W - 0.08 + grow, TOP + grow)
-    .lineTo(0.32 - grow, TOP + grow)
+    .moveTo(FRONT + SASH * 1.4 - grow, BELT)
+    .lineTo(RAKE + SASH * 0.6 - grow, TOP - SASH + grow)
+    .lineTo(REAR - SASH - CORNER + grow, TOP - SASH + grow)
+    .quadraticCurveTo(REAR - SASH + grow, TOP - SASH + grow, REAR - SASH + grow, TOP - SASH - CORNER - grow)
+    .lineTo(REAR - SASH + grow, BELT)
     .closePath();
 }
 
-const leaf = new Shape()
-  .moveTo(0.005, -LH / 2)
-  .lineTo(W - 0.005, -LH / 2)
-  .lineTo(W - 0.005, LH / 2)
-  .lineTo(0.005, LH / 2);
-leaf.holes.push(windowPath(0));
-const seal = new Shape(windowPath(0.025).getPoints());
-seal.holes.push(windowPath(0));
-const pane = new Shape(windowPath(0).getPoints());
+const frame = new Shape(windowOutline(SASH).getPoints());
+frame.holes.push(windowOutline(0));
+const pane = new Shape(windowOutline(0).getPoints());
+// The black sail that carries the mirror, filling the corner between the belt and the A-pillar.
+const sail = new Shape()
+  .moveTo(FRONT + SASH * 1.4, BELT)
+  .lineTo(FRONT + SASH * 1.4 + 0.07, BELT + 0.17)
+  .lineTo(FRONT + SASH * 1.4 + 0.15, BELT)
+  .closePath();
 
 const spots: [x: number, y: number, r: number][] = [
-  [0.22, -0.86, 0.06],
-  [0.31, -0.8, 0.03],
-  [0.72, -0.92, 0.04],
-  [0.86, 0.02, 0.025],
+  [0.2, -0.88, 0.06],
+  [0.29, -0.83, 0.03],
+  [0.74, -0.94, 0.04],
+  [0.84, -0.06, 0.022],
 ];
 
-/** A Pride car door, repurposed as a front door: tinted window, side mirror, rust and a plate for the house number. */
+const flat = { depth: 0.045, bevelEnabled: true, bevelSize: 0.008, bevelThickness: 0.008, bevelSegments: 3 };
+
+/** A Pride's front door, repurposed as a front door: rust, a dent's worth of character and a plate for the number. */
 export function Pride() {
   return (
     <>
       <Backlight />
       <Frame material={block} size={0.1} />
       <Hinge at={[-W / 2, 0, 0.03]}>
-        <group position={[0, 0, -0.0475]}>
+        <group position={[0, 0, -0.055]}>
           <mesh material={paint}>
-            <extrudeGeometry args={[leaf, { depth: 0.045, bevelEnabled: false }]} />
+            <extrudeGeometry args={[body, flat]} />
           </mesh>
-          <mesh position={[0, 0, 0.045]} material={rubber}>
-            <extrudeGeometry args={[seal, { depth: 0.008, bevelEnabled: false }]} />
+          <mesh material={sash}>
+            <extrudeGeometry args={[frame, { depth: 0.035, bevelEnabled: false }]} />
           </mesh>
-          <mesh position={[0, 0, 0.02]} material={glass}>
+          <mesh material={sash}>
+            <extrudeGeometry args={[sail, { depth: 0.04, bevelEnabled: false }]} />
+          </mesh>
+          <mesh position={[0, 0, 0.012]} material={glass}>
             <shapeGeometry args={[pane]} />
           </mesh>
         </group>
-        {/* Body crease and rubber side molding */}
-        <Box size={[W - 0.02, 0.012, 0.006]} at={[W / 2, -0.1, 0]} material={chrome} />
-        <Box size={[W - 0.01, 0.05, 0.014]} at={[W / 2, -0.35, 0.004]} material={rubber} />
-        {/* Pull handle, keyhole and the car's own hinges */}
-        <Box size={[0.14, 0.05, 0.006]} at={[W - 0.16, 0.03, 0.001]} material={rubber} />
-        <Box size={[0.12, 0.025, 0.02]} at={[W - 0.16, 0.03, 0.01]} material={chrome} />
-        <Cylinder
-          radius={0.012}
-          height={0.01}
-          at={[W - 0.05, 0.03, 0.003]}
-          rotation={[Math.PI / 2, 0, 0]}
-          material={chrome}
-        />
-        {[0, -0.6].map((y) => (
-          <Box key={y} size={[0.05, 0.1, 0.03]} at={[0.03, y, 0]} material={rubber} />
-        ))}
-        {/* Side mirror at the front corner of the window */}
-        <Box size={[0.03, 0.03, 0.08]} at={[0.15, SILL + 0.05, 0.04]} material={rubber} />
-        <Box size={[0.16, 0.1, 0.06]} at={[0.15, SILL + 0.08, 0.1]} material={rubber} />
+        {/* Belt molding along the bottom of the window */}
+        <Box size={[REAR - FRONT - 0.04, 0.025, 0.018]} at={[W / 2, BELT, 0.002]} material={rubber} />
+        <Box size={[REAR - FRONT - 0.06, 0.006, 0.004]} at={[W / 2, BELT + 0.008, 0.012]} material={chrome} />
+        {/* Mirror on the sail: a short arm and a rounded black housing */}
+        <Box size={[0.03, 0.03, 0.07]} at={[0.15, BELT + 0.07, 0.02]} material={sash} />
+        <group position={[0.15, BELT + 0.1, 0.09]}>
+          <Box size={[0.17, 0.1, 0.05]} material={sash} />
+          <Cylinder radius={0.05} height={0.05} at={[-0.085, 0, 0]} rotation={[Math.PI / 2, 0, 0]} material={sash} />
+        </group>
+        {/* Body crease running the length of the door */}
+        <Box size={[REAR - FRONT - 0.06, 0.006, 0.004]} at={[W / 2, -0.12, 0.002]} material={crease} />
+        {/* Pull handle in a black recess, key cylinder behind it */}
+        <group position={[W - 0.17, -0.02, 0]}>
+          <Box size={[0.17, 0.06, 0.006]} at={[0, 0, 0.002]} material={rubber} />
+          <Box size={[0.13, 0.02, 0.016]} at={[0, -0.005, 0.01]} material={rubber} />
+          <Cylinder
+            radius={0.016}
+            height={0.012}
+            at={[0.12, 0, 0.005]}
+            rotation={[Math.PI / 2, 0, 0]}
+            material={chrome}
+          />
+          <Box size={[0.004, 0.016, 0.004]} at={[0.12, 0, 0.012]} material={ink} />
+        </group>
+        {/* Rubber side strip that never stopped the dents */}
+        <Box size={[REAR - FRONT - 0.02, 0.045, 0.016]} at={[W / 2, -0.38, 0.004]} material={rubber} />
         {spots.map(([x, y, r]) => (
           <Cylinder
             key={x}
             radius={r}
             height={0.004}
-            at={[x, y, 0.001]}
+            at={[x, y, 0.002]}
             rotation={[Math.PI / 2, 0, 0]}
             material={rust}
           />
         ))}
-        {/* License plate as the house number */}
-        <Box size={[0.36, 0.08, 0.008]} at={[W / 2, -0.58, 0.004]} material={plate} />
-        <Box size={[0.04, 0.08, 0.009]} at={[W / 2 - 0.16, -0.58, 0.005]} material={blue} />
+        {/* An Iranian plate as the house number: blue band on the left, region box on the right */}
+        <group position={[W / 2, -0.6, 0.005]}>
+          <Box size={[0.4, 0.09, 0.008]} material={plate} />
+          <Box size={[0.045, 0.09, 0.009]} at={[-0.1775, 0, 0]} material={blue} />
+          <Box size={[0.004, 0.08, 0.009]} at={[0.12, 0, 0]} material={ink} />
+          {[-0.09, -0.03, 0.03, 0.08, 0.155].map((x) => (
+            <Box key={x} size={[0.02, 0.045, 0.009]} at={[x, 0, 0.001]} material={ink} />
+          ))}
+        </group>
       </Hinge>
     </>
   );

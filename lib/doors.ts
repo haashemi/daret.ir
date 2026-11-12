@@ -1,5 +1,10 @@
 // Server-safe door catalog. The 3D models live in `components/doors`, keyed by the same slug.
+// Doors marked `isNew` get a «جدید» label and always come first in the grid.
 export const doors = [
+  { slug: "cork", name: "چوب‌پنبه", isNew: true },
+  { slug: "monica", name: "خونه مونیکا", isNew: true },
+  { slug: "stable", name: "اصطبل", isNew: true },
+  { slug: "water-bottle", name: "پیچی", isNew: true },
   { slug: "walnut", name: "کلاسیک گردویی" },
   { slug: "white-panel", name: "سفید شش‌پنل" },
   { slug: "security", name: "ضدسرقت" },
@@ -45,6 +50,10 @@ export const doors = [
 
 export type Door = (typeof doors)[number];
 export type DoorSlug = Door["slug"];
+
+export function isNewDoor(door: Door): boolean {
+  return "isNew" in door && door.isNew;
+}
 
 export function findDoor(slug: string): Door | undefined {
   return doors.find((door) => door.slug === slug);

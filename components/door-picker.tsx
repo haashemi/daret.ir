@@ -12,7 +12,7 @@ import type { Door, DoorSlug } from "@/lib/doors";
 
 import { DoorView } from "@/components/door-view";
 import { useSceneFailed } from "@/components/three/scene-status";
-import { doors } from "@/lib/doors";
+import { doors, isNewDoor } from "@/lib/doors";
 
 interface Box {
   top: number;
@@ -42,11 +42,12 @@ const wait = (ms: number) =>
     setTimeout(resolve, ms);
   });
 
-// A fresh order per page load. Only read on the client, so the server and hydration keep the catalog order.
+// A fresh order per page load, new doors first. Only read on the client, so the server and hydration keep the
+// catalog order (which also lists new doors first).
 let shuffled: readonly Door[] | undefined;
 const getShuffled = () =>
   (shuffled ??= doors
-    .map((door) => ({ door, key: Math.random() }))
+    .map((door) => ({ door, key: Math.random() - (isNewDoor(door) ? 1 : 0) }))
     .toSorted((a, b) => a.key - b.key)
     .map(({ door }) => door));
 const getCatalog = () => doors;
@@ -208,6 +209,17 @@ function useAjar(boxRef: RefObject<HTMLDivElement | null>, active: boolean) {
   return active || (noHover && centered);
 }
 
+/** «جدید» next to the name of a door marked `isNew` in the catalog. */
+function NewBadge({ door }: { door: Door }) {
+  if (!isNewDoor(door)) return null;
+
+  return (
+    <span className="bg-light px-1.5 py-0.5 text-[0.625rem] leading-none font-bold text-background md:text-xs">
+      جدید
+    </span>
+  );
+}
+
 function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
   const ref = useRef<HTMLLIElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -268,7 +280,10 @@ function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
           )}
           style={{ transitionDelay: `${leaving ? 0 : stagger + 200}ms` }}
         >
-          <span className="text-sm font-medium md:text-base">{door.name}</span>
+          <span className="flex items-center gap-2 text-sm font-medium md:text-base">
+            {door.name}
+            <NewBadge door={door} />
+          </span>
           <span className="text-xs text-muted-foreground tabular-nums">
             {(index + 1).toLocaleString("fa-IR", { minimumIntegerDigits: 2 })}
           </span>

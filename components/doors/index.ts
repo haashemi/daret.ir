@@ -13,6 +13,7 @@ import { CatFlap } from "./cat-flap";
 import { Chocolate } from "./chocolate";
 import { Closet } from "./closet";
 import { Container } from "./container";
+import { Cork } from "./cork";
 import { Cuckoo } from "./cuckoo";
 import { Dutch } from "./dutch";
 import { Elevator } from "./elevator";
@@ -22,6 +23,7 @@ import { Gaming } from "./gaming";
 import { Heaven } from "./heaven";
 import { Hell } from "./hell";
 import { Hobbit } from "./hobbit";
+import { Monica } from "./monica";
 import { Nested } from "./nested";
 import { OperatingRoom } from "./operating-room";
 import { Paranoid } from "./paranoid";
@@ -38,13 +40,19 @@ import { Scifi } from "./scifi";
 import { Security } from "./security";
 import { Shoji } from "./shoji";
 import { Shutter } from "./shutter";
+import { Stable } from "./stable";
 import { Tent } from "./tent";
 import { Vault } from "./vault";
 import { Walnut } from "./walnut";
 import { WashingMachine } from "./washing-machine";
+import { WaterBottle } from "./water-bottle";
 import { WhitePanel } from "./white-panel";
 
 export const models: Record<DoorSlug, ComponentType> = {
+  cork: Cork,
+  monica: Monica,
+  stable: Stable,
+  "water-bottle": WaterBottle,
   walnut: Walnut,
   "white-panel": WhitePanel,
   security: Security,

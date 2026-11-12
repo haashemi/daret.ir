@@ -1,6 +1,6 @@
 # Doors
 
-Catalog: `lib/doors.ts` (server-safe `{ slug, name }[]`; grid order is shuffled per page load in `door-picker.tsx`, `name` is shown as «در {name}»).
+Catalog: `lib/doors.ts` (server-safe `{ slug, name, isNew? }[]`; grid order is shuffled per page load in `door-picker.tsx`, `name` is shown as «در {name}»). Doors with `isNew: true` get a «جدید» badge and always sort before the rest; list them first in the catalog too, and drop the flag once they're no longer new.
 Models: `components/doors/<slug>.tsx`, registered by slug in `components/doors/index.ts` (`Record<DoorSlug, ComponentType>`, so a missing model is a type error).
 
 ## Adding a door
@@ -18,14 +18,15 @@ Models: `components/doors/<slug>.tsx`, registered by slug in `components/doors/i
 
 ## Parts (`components/three/parts.tsx`)
 
-| Part                        | Use                                                                                                                 |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `Box`, `Cylinder`, `Sphere` | Mesh + geometry with a shared `material`. `Cylinder` is upright; `rotation={[Math.PI / 2, 0, 0]}` faces the viewer. |
-| `Frame`                     | Two jambs and a head around a `width` x `height` opening.                                                           |
-| `Hinge`                     | Swings children **toward the viewer** by `angle * open`. Left hinge: leaf extends to `+x`; `side="right"`: to `-x`. |
-| `Slide`                     | Moves children by `by * open` (elevator, shoji).                                                                    |
-| `Backlight`                 | The light filling the opening (`width`/`height`, or `radius` for round doors).                                      |
-| `OpenContext`               | Read `use(OpenContext).current` in `useFrame` for custom motion (vault wheel, cat flap, shutter, revolving).        |
+| Part                        | Use                                                                                                                                                                 |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Box`, `Cylinder`, `Sphere` | Mesh + geometry with a shared `material`. `Cylinder` is upright; `rotation={[Math.PI / 2, 0, 0]}` faces the viewer.                                                 |
+| `Frame`                     | Two jambs and a head around a `width` x `height` opening.                                                                                                           |
+| `Hinge`                     | Swings children **toward the viewer** by `angle * open`. Left hinge: leaf extends to `+x`; `side="right"`: to `-x`.                                                 |
+| `Slide`                     | Moves children by `by * open` (elevator, shoji).                                                                                                                    |
+| `Tilt`                      | Seen from 45° above while closed, turns to face the viewer as it opens. For things built facing `+z` around the origin (`pot.tsx`, `cork.tsx`, `water-bottle.tsx`). |
+| `Backlight`                 | The light filling the opening (`width`/`height`, or `radius` for round doors).                                                                                      |
+| `OpenContext`               | Read `use(OpenContext).current` in `useFrame` for custom motion (vault wheel, cat flap, shutter, revolving).                                                        |
 
 Conventions:
 

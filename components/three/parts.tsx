@@ -49,7 +49,7 @@ export function Cylinder({
 }: MeshProps & { radius: number; height: number }) {
   return (
     <mesh position={at} rotation={rotation} material={material}>
-      <cylinderGeometry args={[radius, radius, height, 32]} />
+      <cylinderGeometry args={[radius, radius, height, 48]} />
     </mesh>
   );
 }
@@ -57,7 +57,7 @@ export function Cylinder({
 export function Sphere({ radius, at = ORIGIN, material }: MeshProps & { radius: number }) {
   return (
     <mesh position={at} material={material}>
-      <sphereGeometry args={[radius, 16, 12]} />
+      <sphereGeometry args={[radius, 32, 24]} />
     </mesh>
   );
 }
@@ -95,6 +95,21 @@ export function Slide({ by, children }: { by: Vec3; children: ReactNode }) {
 
   useFrame(() => {
     ref.current?.position.set(by[0] * open.current, by[1] * open.current, by[2] * open.current);
+  });
+
+  return <group ref={ref}>{children}</group>;
+}
+
+/**
+ * Tips its children back from facing the viewer: closed they are seen from `from` radians above, fully open they face
+ * the viewer. For doors built facing `+z` around the origin (bottles, the pot), so the whole body shows until opened.
+ */
+export function Tilt({ from = Math.PI / 4, children }: { from?: number; children: ReactNode }) {
+  const ref = useRef<Group>(null);
+  const open = use(OpenContext);
+
+  useFrame(() => {
+    if (ref.current) ref.current.rotation.x = -from * (1 - open.current);
   });
 
   return <group ref={ref}>{children}</group>;

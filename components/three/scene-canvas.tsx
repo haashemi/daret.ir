@@ -3,9 +3,9 @@
 import type { ReactNode } from "react";
 import type { Texture } from "three";
 
-import { PerformanceMonitor, View } from "@react-three/drei";
+import { View } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Component, createContext, useMemo, useState } from "react";
+import { Component, createContext, useMemo } from "react";
 import { CanvasTexture, PMREMGenerator, SRGBColorSpace } from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 
@@ -73,19 +73,11 @@ class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean
  * above a door hides it.
  */
 export function SceneCanvas() {
-  // Full resolution (up to 2x) while frames keep up; drop to 1x on devices that can't hold it, mostly for the hero's
-  // fullscreen shaders.
-  const [dpr, setDpr] = useState(2);
-
+  // Always the device's own resolution, capped at 2x. Dropping to 1x when frames fall behind left every door blurry
+  // for the rest of the visit, since the hero's fullscreen shaders tripped it on most machines.
   return (
     <SceneBoundary>
-      <Canvas style={{ position: "fixed", inset: 0, zIndex: -1, pointerEvents: "none" }} dpr={[1, dpr]} aria-hidden>
-        <PerformanceMonitor
-          onDecline={() => setDpr(1)}
-          onIncline={() => setDpr(2)}
-          flipflops={3}
-          onFallback={() => setDpr(1)}
-        />
+      <Canvas style={{ position: "fixed", inset: 0, zIndex: -1, pointerEvents: "none" }} dpr={[1, 2]} aria-hidden>
         <Port />
       </Canvas>
     </SceneBoundary>

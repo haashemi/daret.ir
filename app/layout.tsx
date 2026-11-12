@@ -4,8 +4,8 @@ import type { Metadata, Viewport } from "next";
 import { cn } from "cn";
 import { ViewTransition } from "react";
 
-import { Footer } from "@/components/footer";
 import { HistoryTransitions } from "@/components/history-transitions";
+import { Footer } from "@/components/layout/footer";
 import { SceneCanvas } from "@/components/three/scene-canvas";
 import { config } from "@/lib/config";
 import { openGraph, twitter } from "@/lib/config/metadata";

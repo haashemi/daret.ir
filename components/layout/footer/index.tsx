@@ -35,7 +35,6 @@ const contactLinks: FooterLink[] = [
 const productLinks: FooterLink[] = [
   { href: "https://t.me/ClownCounterBot", label: "ربات دلقک شمار", detail: "@ClownCounterBot" },
   { href: "https://leftbede.ir/", label: "لفت بده!", detail: "leftbede.ir" },
-  { href: "https://keyeh.ir/", label: "تقویمِ کِیه؟", detail: "keyeh.ir" },
 ].map((link, i) => ({
   ...link,
   lead: (
@@ -47,7 +46,7 @@ const productLinks: FooterLink[] = [
 
 export function Footer() {
   return (
-    <footer className="relative isolate container mx-auto max-w-7xl px-4 pt-24 pb-4 sm:px-0">
+    <footer className="relative isolate container mx-auto max-w-7xl px-4 pb-4 sm:px-0">
       {/* Light leaking along the footer's top edge, like the gap under a closed door. */}
       <div
         aria-hidden

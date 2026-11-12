@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import type { Metadata, Viewport } from "next";
 
 import { cn } from "cn";
+import { Vazirmatn } from "next/font/google";
 import { ViewTransition } from "react";
 
 import { HistoryTransitions } from "@/components/history-transitions";
@@ -9,7 +10,11 @@ import { Footer } from "@/components/layout/footer";
 import { SceneCanvas } from "@/components/three/scene-canvas";
 import { config } from "@/lib/config";
 import { openGraph, twitter } from "@/lib/config/metadata";
-import { vazirmatnFont } from "@/styles/fonts";
+
+export const vazirmatnFont = Vazirmatn({
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: config.appHost,

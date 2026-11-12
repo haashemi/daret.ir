@@ -35,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <SceneCanvas />
         <ViewTransition default="page-fade">
-          <div className="min-h-screen">
+          <div className="flex min-h-screen flex-col gap-16 overflow-x-clip">
             <main className="container mx-auto flex max-w-7xl flex-1 flex-col gap-6 px-4 pb-8">{children}</main>
             <Footer />
           </div>

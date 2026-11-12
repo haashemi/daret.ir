@@ -6,7 +6,7 @@ A Persian (RTL, `lang="fa"`, forced dark theme) single-purpose meme site: a luxu
 
 | Route          | File                       | What                                                                                  |
 | -------------- | -------------------------- | ------------------------------------------------------------------------------------- |
-| `/`            | `app/page.tsx`             | Server hero, passed as `children` to the client `DoorPicker` (grid + exit sequence).  |
+| `/`            | `app/page.tsx`             | `Hero` (`components/hero.tsx`), passed as `children` to `DoorPicker` (grid + exit sequence). |
 | `/door/[slug]` | `app/door/[slug]/page.tsx` | Result page. `generateStaticParams` from `lib/doors.ts`; unknown slugs `notFound()`.  |
 
 - Static export (`output: "export"`, `cacheComponents: false`): every door page is prerendered from `generateStaticParams`, and unknown slugs call `notFound()`.
@@ -19,6 +19,7 @@ A Persian (RTL, `lang="fa"`, forced dark theme) single-purpose meme site: a luxu
 - **The canvas is under the DOM.** Any element with a background above a door hides it. That's how the grid's reveal/dismiss "covers" work (each cover also holds a shimmering door placeholder until `DoorScene` calls `onReady` on its first frame), and why page containers must stay transparent.
 - `SceneAssetsContext` (environment map + halo texture) is built once per renderer in the canvas and reaches every view because views render through `View.Port`.
 - Views with a higher `index` draw later (the flying door uses `index={2}`).
+- The home hero is one full-screen view, `components/three/scenery.tsx`: a fullscreen shader quad (sky, clouds, hills, rippling water reflecting them), the white door standing in the water, and its mirror image under a water "veil" of the same shader. Its DOM title must read as *behind* the door, so the scene projects the door's outline each frame and writes it as a `clip-path` hole on the text layer, and moves that layer as if it stood 4m behind the door (parallax). Behind the door, a portal plane over the opening (and its mirrored copy) draws hell and a 👍 (a canvas-texture emoji) with the same ray approach. The hero is a sticky `h-svh` view inside a `300svh` track: the scene reads the track's scroll progress every frame, walks the camera up to the door while it opens, and writes `--hero-progress` for the DOM to fade the text. The hero fades its scene out through `LeavingContext` (from `DoorPicker`), since fading the DOM doesn't hide the canvas.
 - If the canvas can't start (no WebGL), `SceneBoundary` in `scene-canvas.tsx` drops it and sets the flag read by `useSceneFailed()` (`components/three/scene-status.ts`). Cells then keep a static placeholder and clicks navigate without the exit sequence.
 
 `components/three/door-scene.tsx` wraps each door: camera (fov 25, slightly off to the right so outward-swinging doors reveal the light), lights, the halo, and `OpenContext`, a damped `{ current: 0..1 }` the door parts read in `useFrame`. Props: `open` (target), `from` (initial), `distance`, `halo`.

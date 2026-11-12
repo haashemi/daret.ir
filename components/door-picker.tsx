@@ -6,7 +6,7 @@ import { cn } from "cn";
 import { motion, useInView, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createContext, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import type { Door, DoorSlug } from "@/lib/doors";
 
@@ -29,6 +29,10 @@ interface Leaving {
    * frames after the flight box mounts, both drawing it at the same spot, and is removed once the flight is drawn. */
   handedOff?: boolean;
 }
+
+/** `true` once a door is chosen and the page is fading out, for the hero to fade what the canvas draws behind it. */
+export const LeavingContext = createContext(false);
+LeavingContext.displayName = "LeavingContext";
 
 const HOVER_OPEN = 0.2;
 const EASE_IN_OUT = [0.65, 0, 0.35, 1] as const;
@@ -119,9 +123,11 @@ export function DoorPicker({ children }: { children: ReactNode }) {
         ref={pageRef}
         data-leaving={leaving ? "" : undefined}
         style={{ transformOrigin: origin }}
-        className="group/page transition-[scale] duration-700 ease-in-out data-leaving:scale-[0.94]"
+        className="group/page flex flex-col gap-16 transition-[scale] duration-700 ease-in-out data-leaving:scale-[0.94]"
       >
-        <div className="transition-opacity duration-500 group-data-leaving/page:opacity-0">{children}</div>
+        <div className="transition-opacity duration-500 group-data-leaving/page:opacity-0">
+          <LeavingContext value={Boolean(leaving)}>{children}</LeavingContext>
+        </div>
         <ul className="grid grid-cols-2 border-s border-t transition-colors duration-500 group-data-leaving/page:border-transparent md:grid-cols-3 xl:grid-cols-5">
           {order.map((door, index) => (
             <DoorCell key={door.slug} door={door} index={index} leaving={leaving} onChoose={choose} />

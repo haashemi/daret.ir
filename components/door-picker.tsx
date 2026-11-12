@@ -293,25 +293,20 @@ function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
   );
 }
 
-// Columns left over in the last row, per breakpoint (2 / 3 / 5 columns). Full class names so Tailwind can see them.
-const FILL_BASE = ["hidden", "flex col-span-1"] as const;
-const FILL_MD = ["md:hidden", "md:flex md:col-span-1", "md:flex md:col-span-2"] as const;
-const FILL_XL = [
-  "xl:hidden",
-  "xl:flex xl:col-span-1",
-  "xl:flex xl:col-span-2",
-  "xl:flex xl:col-span-3",
-  "xl:flex xl:col-span-4",
-] as const;
+// Spans the columns left over in the last row, per breakpoint (2 / 3 / 5 columns), or a whole row of its own when the
+// last row is full. Indexed by `left(columns)`; full class names so Tailwind can see them.
+const FILL_BASE = ["col-span-2", "col-span-1"] as const;
+const FILL_MD = ["md:col-span-3", "md:col-span-1", "md:col-span-2"] as const;
+const FILL_XL = ["xl:col-span-5", "xl:col-span-1", "xl:col-span-2", "xl:col-span-3", "xl:col-span-4"] as const;
 
 const left = (columns: number) => (columns - (doors.length % columns)) % columns;
 
-/** Closes the last row of the grid, whatever the number of doors, and asks for the next one. */
+/** Always shown: closes the last row of the grid, whatever the number of doors, and asks for the next one. */
 function SuggestCell() {
   return (
     <li
       className={cn(
-        "flex-col items-center justify-center gap-4 border-e border-b p-6 text-center transition duration-500 group-data-leaving/page:border-transparent group-data-leaving/page:opacity-0",
+        "flex flex-col items-center justify-center gap-4 border-e border-b p-6 text-center transition duration-500 group-data-leaving/page:border-transparent group-data-leaving/page:opacity-0",
         FILL_BASE[left(2)],
         FILL_MD[left(3)],
         FILL_XL[left(5)],

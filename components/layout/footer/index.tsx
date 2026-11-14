@@ -35,6 +35,7 @@ const contactLinks: FooterLink[] = [
 const productLinks: FooterLink[] = [
   { href: "https://t.me/ClownCounterBot", label: "ربات دلقک شمار", detail: "@ClownCounterBot" },
   { href: "https://leftbede.ir/", label: "لفت بده!", detail: "leftbede.ir" },
+  { href: "https://bazitory.com/", label: "بازیطوری", detail: "bazitory.com" },
 ].map((link, i) => ({
   ...link,
   lead: (
@@ -111,13 +112,13 @@ function FooterLinkRow({ href, label, detail, lead }: FooterLink) {
         <ArrowUpLeft
           aria-hidden
           strokeWidth={1.75}
-          className="ease-snappy size-3.5 transition-transform duration-200 motion-safe:group-hover:-translate-0.5 motion-safe:group-focus-visible:-translate-0.5"
+          className="size-3.5 transition-transform duration-200 ease-snappy motion-safe:group-hover:-translate-0.5 motion-safe:group-focus-visible:-translate-0.5"
         />
       </span>
       {/* Grows from the row's start edge; under reduced motion it fades in instead. */}
       <span
         aria-hidden
-        className="ease-snappy absolute inset-x-0 -bottom-px h-px origin-right scale-x-0 bg-light transition-[scale,opacity] duration-200 group-hover:scale-x-100 group-focus-visible:scale-x-100 motion-reduce:scale-x-100 motion-reduce:opacity-0 motion-reduce:group-hover:opacity-100"
+        className="absolute inset-x-0 -bottom-px h-px origin-right scale-x-0 bg-light transition-[scale,opacity] duration-200 ease-snappy group-hover:scale-x-100 group-focus-visible:scale-x-100 motion-reduce:scale-x-100 motion-reduce:opacity-0 motion-reduce:group-hover:opacity-100"
       />
     </a>
   );

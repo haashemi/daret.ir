@@ -36,4 +36,4 @@ Conventions:
 - Typical leaf: `<Hinge at={[-W / 2, 0, 0.03]}>` with the leaf box at `[W / 2, 0, -0.025]`, sized `[W - 0.01, H - 0.01, 0.045]`. Details sit on the front face at `z ≈ 0..0.05`.
 - Double doors use two `Hinge`s and a local `Leaf({ dir })` (`barn.tsx`, `persian.tsx`, `container.tsx`).
 - `Hinge`s nest: a bi-fold is a `Hinge` holding a panel and a second `Hinge` at twice the angle on the other side (`bus.tsx`); `nested.tsx` puts doors in doors.
-- Open amounts: grid `0`, hover/focus `0.2`, flight `1`, result page `0` (shut, left for its owner to put in).
+- Open amounts: grid `0`, hover/focus `0.2`, result page `0` (shut, left for its owner to put in).

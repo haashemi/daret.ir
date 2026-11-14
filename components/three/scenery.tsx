@@ -1,7 +1,7 @@
 "use client";
 
 import type { RefObject } from "react";
-import type { PerspectiveCamera as Camera, Mesh, PointLight, Texture } from "three";
+import type { PerspectiveCamera as Camera, PointLight, Texture } from "three";
 
 import { Environment, PerspectiveCamera } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
@@ -26,8 +26,6 @@ interface SceneryProps {
   pointerRef: RefObject<Pointer>;
   /** Reduced motion: no clouds drifting, no ripples, no camera sway. */
   still: boolean;
-  /** Fades the whole scene into the page background (the door-choice exit sequence). */
-  faded: boolean;
   /** Gets a `clip-path` with a hole where the door stands, so its content reads as behind the door. */
   holeRef: RefObject<HTMLElement | null>;
   /** Moved as if it stood a few meters behind the door, for parallax. */
@@ -173,7 +171,6 @@ const SCENERY_GLSL = /* glsl */ `
 // One scene on the page, so its uniforms and materials are shared module constants, like the doors' materials.
 const uniforms = {
   uTime: { value: 0 },
-  uFade: { value: 0 },
   /** Darkens the top of the sky behind the title, `0..1`. */
   uScrim: { value: 1 },
   uEmoji: { value: null as Texture | null },
@@ -355,20 +352,6 @@ const bottomFadeMaterial = new ShaderMaterial({
     `,
 });
 
-/** Covers the view with the page background. */
-const fadeMaterial = new ShaderMaterial({
-  uniforms,
-  transparent: true,
-  depthTest: false,
-  depthWrite: false,
-  vertexShader: /* glsl */ `void main() { gl_Position = vec4(position.xy, 0.0, 1.0); }`,
-  // The `--background` token, oklch(0.141 0.005 285.823).
-  fragmentShader: /* glsl */ `
-      uniform float uFade;
-      void main() { gl_FragColor = vec4(0.035, 0.035, 0.043, uFade); }
-    `,
-});
-
 type Point = [number, number];
 
 const UP = new Vector3(0, 1, 0);
@@ -457,9 +440,8 @@ function clipAroundDoor(camera: Camera, open: number) {
  * the pointer (or slowly on its own), and the DOM layer between the sky and the door follows it at its own depth.
  * Scrolling walks the camera up to the door as it swings open, until hell fills the screen.
  */
-export function Scenery({ pointerRef, still, faded, holeRef, depthRef, trackRef, onReady }: SceneryProps) {
+export function Scenery({ pointerRef, still, holeRef, depthRef, trackRef, onReady }: SceneryProps) {
   const cameraRef = useRef<Camera>(null);
-  const fadeRef = useRef<Mesh>(null);
   const swayRef = useRef({ x: 0, y: 0 });
   const readyRef = useRef(false);
   const lastClipRef = useRef("");
@@ -484,8 +466,6 @@ export function Scenery({ pointerRef, still, faded, holeRef, depthRef, trackRef,
 
     if (!still) uniforms.uTime.value += delta;
     uniforms.uScrim.value = MathUtils.clamp(1 - progress * 4, 0, 1);
-    uniforms.uFade.value = MathUtils.damp(uniforms.uFade.value, faded ? 1 : 0, 6, delta);
-    if (fadeRef.current) fadeRef.current.visible = uniforms.uFade.value > 0.001;
 
     const target = swayTarget(still, pointerRef.current, state.clock.elapsedTime);
     swayRef.current.x = MathUtils.damp(swayRef.current.x, target.x, 2.5, delta);
@@ -561,10 +541,6 @@ export function Scenery({ pointerRef, still, faded, holeRef, depthRef, trackRef,
       </mesh>
 
       <mesh material={bottomFadeMaterial} renderOrder={9} frustumCulled={false}>
-        <planeGeometry args={[2, 2]} />
-      </mesh>
-
-      <mesh ref={fadeRef} material={fadeMaterial} renderOrder={10} frustumCulled={false} visible={false}>
         <planeGeometry args={[2, 2]} />
       </mesh>
     </>

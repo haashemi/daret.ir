@@ -50,7 +50,7 @@ export default async function DoorPage({ params }: PageProps<"/door/[slug]">) {
   return (
     <>
       <JsonLd data={breadcrumbs} />
-      {/* Choosing another door below runs the same exit sequence as the home grid. */}
+      {/* Choosing another door below morphs into its page like the home grid. */}
       <DoorPicker>
         <DoorResult door={door} />
         <RelatedDoors current={door.slug} />

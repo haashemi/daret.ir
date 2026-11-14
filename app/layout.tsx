@@ -40,7 +40,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="fa" dir="rtl" className={cn(vazirmatnFont.variable, "dark")} data-scroll-behavior="smooth">
       <body>
         <SceneCanvas />
-        <ViewTransition default="page-fade">
+        {/* Off for a chosen door's navigation (`DOOR_TRANSITION`), which cross-fades the viewport (root) instead: this
+            snapshot is the whole page from its top, so it would show the top of a page left scrolled. */}
+        <ViewTransition default={{ door: "none", default: "page-fade" }}>
           <div className="flex min-h-screen flex-col gap-16 overflow-x-clip">
             <main className="container mx-auto flex max-w-7xl flex-1 flex-col gap-6 px-4 pb-8">{children}</main>
             <Footer />

@@ -16,3 +16,9 @@
 ::view-transition-group(.page-fade) {
   animation: none;
 }
+
+/* A chosen door's still flying from its grid cell to its page (components/result-door.tsx). */
+::view-transition-group(.door-morph) {
+  animation-duration: 600ms;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+}

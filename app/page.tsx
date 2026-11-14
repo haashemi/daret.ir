@@ -37,9 +37,7 @@ export default function HomePage() {
     <>
       <JsonLd data={jsonLd} />
       <DoorPicker>
-        <div className="transition-opacity duration-500 group-data-leaving/page:opacity-0">
-          <Hero />
-        </div>
+        <Hero />
         <DoorGrid />
       </DoorPicker>
       <About />

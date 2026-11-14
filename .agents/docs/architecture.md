@@ -6,7 +6,7 @@ A Persian (RTL, `lang="fa"`, forced dark theme) single-purpose meme site: a luxu
 
 | Route          | File                       | What                                                                                                                |
 | -------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `/`            | `app/page.tsx`             | `Hero` (`components/hero.tsx`), passed as `children` to `DoorPicker` (grid + exit sequence).                        |
+| `/`            | `app/page.tsx`             | `Hero` (`components/hero.tsx`), passed as `children` to `DoorPicker` (grid + door morph).                           |
 | `/door/[slug]` | `app/door/[slug]/page.tsx` | Result page (`components/door-result.tsx`). `generateStaticParams` from `lib/doors.ts`; unknown slugs `notFound()`. |
 
 - SEO: `app/robots.ts` and `app/sitemap.ts` (home plus every door from `lib/doors.ts`, `force-static` for the export). The home page renders `WebSite` + `ItemList` JSON-LD and `About` (`components/about.tsx`), a short FAQ under the grid. Door pages render `BreadcrumbList` JSON-LD (`components/json-ld.tsx`) and `RelatedDoors` (`components/related-doors.tsx`): the next four doors in catalog order as `DoorCell`s, so they look and choose like the home grid. Site title/description/alternate names live in `lib/config/index.ts`.
@@ -20,8 +20,8 @@ A Persian (RTL, `lang="fa"`, forced dark theme) single-purpose meme site: a luxu
 - **The canvas is under the DOM.** Any element with a background above a door hides it. That's how the grid's reveal/dismiss "covers" work (each cover also holds the door's still, `public/doors/<slug>.jpg`, over a shimmer until `DoorScene` calls `onReady` on its first frame), and why page containers must stay transparent.
 - `SceneAssetsContext` (environment map + halo texture) is built once per renderer in the canvas and reaches every view because views render through `View.Port`.
 - Views with a higher `index` draw later (the flying door uses `index={2}`).
-- The home hero is one full-screen view, `components/three/scenery.tsx`: a fullscreen shader quad (sky, clouds, hills, rippling water reflecting them), the white door standing in the water, and its mirror image under a water "veil" of the same shader. Its DOM title must read as _behind_ the door, so the scene projects the door's outline each frame and writes it as a `clip-path` hole on the text layer, and moves that layer as if it stood 4m behind the door (parallax). Behind the door, a portal plane over the opening (and its mirrored copy) draws hell and a 👍 (a canvas-texture emoji) with the same ray approach. The hero is a sticky `h-svh` view inside a `300svh` track: the scene reads the track's scroll progress every frame, walks the camera up to the door while it opens, and writes `--hero-progress` for the DOM to fade the text. The hero fades its scene out through `LeavingContext` (from `DoorPicker`), since fading the DOM doesn't hide the canvas.
-- If the canvas can't start (no WebGL), `SceneBoundary` in `scene-canvas.tsx` drops it and sets the flag read by `useSceneFailed()` (`components/three/scene-status.ts`). Cells then keep their stills and clicks navigate without the exit sequence.
+- The home hero is one full-screen view, `components/three/scenery.tsx`: a fullscreen shader quad (sky, clouds, hills, rippling water reflecting them), the white door standing in the water, and its mirror image under a water "veil" of the same shader. Its DOM title must read as _behind_ the door, so the scene projects the door's outline each frame and writes it as a `clip-path` hole on the text layer, and moves that layer as if it stood 4m behind the door (parallax). Behind the door, a portal plane over the opening (and its mirrored copy) draws hell and a 👍 (a canvas-texture emoji) with the same ray approach. The hero is a sticky `h-svh` view inside a `300svh` track: the scene reads the track's scroll progress every frame, walks the camera up to the door while it opens, and writes `--hero-progress` for the DOM to fade the text.
+- If the canvas can't start (no WebGL), `SceneBoundary` in `scene-canvas.tsx` drops it and sets the flag read by `useSceneFailed()` (`components/three/scene-status.ts`). Cells then keep their stills, which still morph into the door page.
 
 ### Home splash (`components/splash.tsx`)
 
@@ -39,24 +39,21 @@ On a direct visit to `/`, `Hero` renders `Splash`: a fixed `bg-background` overl
 - One hairline frame: greeting row with the gold «دَرِت» seal (a link home), «در {name}!», the punchline «حالا برو درتو بذار», the door's `description`, then share / random / all-doors and the donate row. The door sits on the far side, shut (`open={0}`).
 - The punchline is the point of the site: it outranks everything on the page, and the `description` stays small and dim after it.
 
-## Exit sequence (`components/door-picker.tsx`)
+## Door morph (`components/door-picker.tsx`, `components/result-door.tsx`)
 
-`DoorPicker` wraps a page of doors: the home page (`Hero` + `DoorGrid`) and the door page (`DoorResult` + `RelatedDoors`). It provides the state to every `DoorCell` inside it through `PickerContext`, plus `LeavingContext` for the hero. What should fade during the exit carries `group-data-leaving/page:opacity-0`. A door that isn't a cell, like the result page's (`components/result-door.tsx`), reads `useExitState()` and covers itself like a dismissed cell, because fading the DOM doesn't hide what the canvas draws.
+`DoorPicker` wraps a page of doors: the home page (`Hero` + `DoorGrid`) and the door page (`DoorResult` + `RelatedDoors`), and tells every `DoorCell` inside it (`PickerContext`) which door was chosen. Choosing a door is a view transition on the navigation itself:
 
-`Leaving` state drives everything; `choose()` is an async timeline:
+1. The click marks the door chosen: its cell drops its `DoorView` and shows its still at full opacity, named `door-<slug>` (`<ViewTransition name share="door-morph">`). The canvas draws under the DOM and isn't captured as part of an element, so the still is what flies.
+2. The `Link` navigates with the `door` transition type. The layout's `page-fade` wrapper turns itself off for it (its snapshot is the whole page from the top, so a scrolled page would show its own top), leaving the viewport (`root`) to cross-fade.
+3. `ResultDoor` frames the same still like its 3D door (`STILL_HEIGHT`, from the camera distances) under the same name, so the still morphs from the cell into it (`::view-transition-group(.door-morph)`, 600ms, symmetric ease-in-out). `markDoorMorph()` holds its `DoorView` back until the morph's animations finish (`onShare`, with a timeout for browsers without view transitions), then the still fades into the 3D door as on any visit.
 
-1. `{ slug }`: page scales to 0.94 around the chosen door, hero/labels/grid lines fade, other cells' covers fade in. 450ms.
-2. `{ slug, flight }`: a `fixed` motion box mounts at the chosen cell's rect with its own `DoorView`; other cells unmount their views (covers still on). 50ms, so both draw the chosen door at the same spot.
-3. `{ …, handedOff: true }`: the cell's view and all covers unmount; the box flies to the center (door opens to 1), then scales ×2.6 while a full-screen `bg-light` overlay fades in.
-4. `router.push('/door/[slug]')`. The result page starts with its own `bg-light` overlay (`ArrivalLight`, `animate-flash-out`), so the light carries across the cut. `choose()` marks the navigation first (`markArrivalThroughLight()`); every other arrival (direct visit, other links, back/forward, no WebGL, reduced motion) has no overlay.
-
-Modified clicks (new tab etc.) and `prefers-reduced-motion` skip the sequence and navigate normally.
+Modified clicks (new tab etc.) don't mark a door. `prefers-reduced-motion` drops the transition's animations (`styles/view-transitions.css`).
 
 ## Styling
 
 - Tailwind v4 + shadcn (`base-nova`, Base UI). Tokens in `styles/theme.css`; `--radius: 0` (sharp, border-line design).
 - `--light` / `bg-light` is the color behind every door. Keep it in sync with `LIGHT_COLOR` in `components/three/parts.tsx`.
-- Animations (`scroll-cue`, `flash-out`, `rise`, `stamp`, `shimmer`) live in `styles/animations.css`. Motion is kept to the hero, the door-choice sequence, the result page's light (`flash-out`) and seal (`stamp`); grid cells and result-page text don't animate in. `text-glow` (in `styles/globals.css`) is the light glowing off a line of text.
+- Animations (`scroll-cue`, `rise`, `stamp`, `shimmer`) live in `styles/animations.css`, view transitions in `styles/view-transitions.css`. Motion is kept to the hero, the door morph and the result page's seal (`stamp`); grid cells and result-page text don't animate in. `text-glow` (in `styles/globals.css`) is the light glowing off a line of text.
 - Font: Vazirmatn (`app/layout.tsx`). Persian digits via `toLocaleString("fa-IR")`.
 
 ## Social images and door stills

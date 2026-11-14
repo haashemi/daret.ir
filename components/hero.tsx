@@ -3,11 +3,10 @@
 import { View } from "@react-three/drei";
 import { cn } from "cn";
 import { useReducedMotion } from "motion/react";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { Pointer } from "@/components/three/scenery";
 
-import { LeavingContext } from "@/components/door-picker";
 import { Splash } from "@/components/splash";
 import { useSceneFailed } from "@/components/three/scene-status";
 import { Scenery, SCROLL_WALK } from "@/components/three/scenery";
@@ -21,7 +20,6 @@ const TEXT_SHADOW = "[text-shadow:0_1px_2px_rgb(6_24_56/55%),0_4px_32px_rgb(6_24
  * and a 👍.
  */
 export function Hero() {
-  const leaving = use(LeavingContext);
   const sceneFailed = useSceneFailed();
   const reduceMotion = useReducedMotion();
   const [ready, setReady] = useState(false);
@@ -72,7 +70,6 @@ export function Hero() {
           <Scenery
             pointerRef={pointerRef}
             still={Boolean(reduceMotion)}
-            faded={leaving}
             holeRef={holeRef}
             depthRef={depthRef}
             trackRef={trackRef}

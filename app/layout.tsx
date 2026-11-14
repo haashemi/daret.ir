@@ -14,15 +14,16 @@ import { openGraph, twitter } from "@/lib/config/metadata";
 export const vazirmatnFont = Vazirmatn({
   variable: "--font-sans",
   display: "swap",
+  // Subsets let next/font preload the files; Persian is the `arabic` one.
+  subsets: ["arabic", "latin"],
 });
 
 export const metadata: Metadata = {
   metadataBase: config.appHost,
   alternates: { canonical: "/" },
-  title: { default: config.appName, template: `%s | ${config.appName}` },
+  title: { default: config.appTitle, template: `%s | ${config.appName}` },
   description: config.appDescription,
   applicationName: config.appName,
-  keywords: ["در", "درت", "درب", "درب ضدسرقت", "Daret"],
   openGraph,
   twitter,
   robots: { index: true, follow: true, "max-image-preview": "large" },

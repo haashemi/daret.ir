@@ -9,6 +9,7 @@ A Persian (RTL, `lang="fa"`, forced dark theme) single-purpose meme site: a luxu
 | `/`            | `app/page.tsx`             | `Hero` (`components/hero.tsx`), passed as `children` to `DoorPicker` (grid + exit sequence). |
 | `/door/[slug]` | `app/door/[slug]/page.tsx` | Result page. `generateStaticParams` from `lib/doors.ts`; unknown slugs `notFound()`.  |
 
+- SEO: `app/robots.ts` and `app/sitemap.ts` (home plus every door from `lib/doors.ts`, `force-static` for the export). The home page renders `WebSite` + `ItemList` JSON-LD and `About` (`components/about.tsx`), a short FAQ under the grid. Site title/description/alternate names live in `lib/config/index.ts`.
 - Static export (`output: "export"`, `cacheComponents: false`): every door page is prerendered from `generateStaticParams`, and unknown slugs call `notFound()`.
 - Next keeps visited pages mounted but hidden (`<Activity>`), so transient UI state is reset in a `useLayoutEffect` cleanup (see `DoorPicker`).
 

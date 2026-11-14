@@ -5,6 +5,7 @@ import { config } from ".";
 // A page that sets `openGraph` or `twitter` replaces the layout's object entirely, so pages spread these to keep the rest.
 export const openGraph = {
   type: "website",
+  locale: "fa_IR",
   siteName: config.appName,
   url: config.appHost,
   title: config.appName,

@@ -5,7 +5,12 @@ import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
 
-export const metadata: Metadata = { title: "پیدا نشد" };
+// Replaces the layout's `index` robots and home canonical, which would otherwise be inherited.
+export const metadata: Metadata = {
+  title: "پیدا نشد",
+  robots: { index: false, follow: true },
+  alternates: { canonical: null },
+};
 
 export default function NotFound() {
   return (

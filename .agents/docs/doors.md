@@ -1,11 +1,11 @@
 # Doors
 
-Catalog: `lib/doors.ts` (server-safe `{ slug, name, isNew? }[]`; grid order is shuffled per page load in `door-picker.tsx`, `name` is shown as «در {name}»). Doors with `isNew: true` get a «جدید» badge and always sort before the rest; list them first in the catalog too, and drop the flag once they're no longer new.
+Catalog: `lib/doors.ts` (server-safe `{ slug, name, isNew?, description }[]`; grid order is shuffled per page load in `door-picker.tsx`, `name` is shown as «در {name}», `description` is a one- or two-sentence joke blurb in the site's colloquial Persian, shown quietly on the result page). Doors with `isNew: true` get a «جدید» badge and always sort before the rest; list them first in the catalog too, and drop the flag once they're no longer new.
 Models: `components/doors/<slug>.tsx`, registered by slug in `components/doors/index.ts` (`Record<DoorSlug, ComponentType>`, so a missing model is a type error).
 
 ## Adding a door
 
-1. Add `{ slug, name }` to `lib/doors.ts`.
+1. Add `{ slug, name, description }` to `lib/doors.ts`.
 2. Create `components/doors/<slug>.tsx` exporting a component with no props.
 3. Register it in `components/doors/index.ts`.
 4. Any count works: `SuggestCell` in `components/door-picker.tsx` fills whatever columns are left in the last row, or a full row when it is full.
@@ -35,4 +35,4 @@ Conventions:
 - Typical leaf: `<Hinge at={[-W / 2, 0, 0.03]}>` with the leaf box at `[W / 2, 0, -0.025]`, sized `[W - 0.01, H - 0.01, 0.045]`. Details sit on the front face at `z ≈ 0..0.05`.
 - Double doors use two `Hinge`s and a local `Leaf({ dir })` (`barn.tsx`, `persian.tsx`, `container.tsx`).
 - `Hinge`s nest: a bi-fold is a `Hinge` holding a panel and a second `Hinge` at twice the angle on the other side (`bus.tsx`); `nested.tsx` puts doors in doors.
-- Open amounts: grid `0`, hover/focus `0.2`, flight and result page `1`.
+- Open amounts: grid `0`, hover/focus `0.2`, flight `1`, result page `0` (shut, left for its owner to put in).

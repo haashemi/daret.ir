@@ -8,6 +8,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* The light behind the doors, glowing off a line of text. */
+@utility text-glow {
+  text-shadow: 0 0 48px color-mix(in oklab, var(--light) 35%, transparent);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

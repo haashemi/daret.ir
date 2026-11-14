@@ -4,10 +4,10 @@ A Persian (RTL, `lang="fa"`, forced dark theme) single-purpose meme site: a luxu
 
 ## Routes
 
-| Route          | File                       | What                                                                                  |
-| -------------- | -------------------------- | ------------------------------------------------------------------------------------- |
-| `/`            | `app/page.tsx`             | `Hero` (`components/hero.tsx`), passed as `children` to `DoorPicker` (grid + exit sequence). |
-| `/door/[slug]` | `app/door/[slug]/page.tsx` | Result page. `generateStaticParams` from `lib/doors.ts`; unknown slugs `notFound()`.  |
+| Route          | File                       | What                                                                                                                |
+| -------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `/`            | `app/page.tsx`             | `Hero` (`components/hero.tsx`), passed as `children` to `DoorPicker` (grid + exit sequence).                        |
+| `/door/[slug]` | `app/door/[slug]/page.tsx` | Result page (`components/door-result.tsx`). `generateStaticParams` from `lib/doors.ts`; unknown slugs `notFound()`. |
 
 - SEO: `app/robots.ts` and `app/sitemap.ts` (home plus every door from `lib/doors.ts`, `force-static` for the export). The home page renders `WebSite` + `ItemList` JSON-LD and `About` (`components/about.tsx`), a short FAQ under the grid. Site title/description/alternate names live in `lib/config/index.ts`.
 - Static export (`output: "export"`, `cacheComponents: false`): every door page is prerendered from `generateStaticParams`, and unknown slugs call `notFound()`.
@@ -20,10 +20,15 @@ A Persian (RTL, `lang="fa"`, forced dark theme) single-purpose meme site: a luxu
 - **The canvas is under the DOM.** Any element with a background above a door hides it. That's how the grid's reveal/dismiss "covers" work (each cover also holds a shimmering door placeholder until `DoorScene` calls `onReady` on its first frame), and why page containers must stay transparent.
 - `SceneAssetsContext` (environment map + halo texture) is built once per renderer in the canvas and reaches every view because views render through `View.Port`.
 - Views with a higher `index` draw later (the flying door uses `index={2}`).
-- The home hero is one full-screen view, `components/three/scenery.tsx`: a fullscreen shader quad (sky, clouds, hills, rippling water reflecting them), the white door standing in the water, and its mirror image under a water "veil" of the same shader. Its DOM title must read as *behind* the door, so the scene projects the door's outline each frame and writes it as a `clip-path` hole on the text layer, and moves that layer as if it stood 4m behind the door (parallax). Behind the door, a portal plane over the opening (and its mirrored copy) draws hell and a 👍 (a canvas-texture emoji) with the same ray approach. The hero is a sticky `h-svh` view inside a `300svh` track: the scene reads the track's scroll progress every frame, walks the camera up to the door while it opens, and writes `--hero-progress` for the DOM to fade the text. The hero fades its scene out through `LeavingContext` (from `DoorPicker`), since fading the DOM doesn't hide the canvas.
+- The home hero is one full-screen view, `components/three/scenery.tsx`: a fullscreen shader quad (sky, clouds, hills, rippling water reflecting them), the white door standing in the water, and its mirror image under a water "veil" of the same shader. Its DOM title must read as _behind_ the door, so the scene projects the door's outline each frame and writes it as a `clip-path` hole on the text layer, and moves that layer as if it stood 4m behind the door (parallax). Behind the door, a portal plane over the opening (and its mirrored copy) draws hell and a 👍 (a canvas-texture emoji) with the same ray approach. The hero is a sticky `h-svh` view inside a `300svh` track: the scene reads the track's scroll progress every frame, walks the camera up to the door while it opens, and writes `--hero-progress` for the DOM to fade the text. The hero fades its scene out through `LeavingContext` (from `DoorPicker`), since fading the DOM doesn't hide the canvas.
 - If the canvas can't start (no WebGL), `SceneBoundary` in `scene-canvas.tsx` drops it and sets the flag read by `useSceneFailed()` (`components/three/scene-status.ts`). Cells then keep a static placeholder and clicks navigate without the exit sequence.
 
 `components/three/door-scene.tsx` wraps each door: camera (fov 25, slightly off to the right so outward-swinging doors reveal the light), lights, the halo, and `OpenContext`, a damped `{ current: 0..1 }` the door parts read in `useFrame`. Props: `open` (target), `from` (initial), `distance`, `halo`.
+
+## Result page (`components/door-result.tsx`)
+
+- One hairline frame: greeting row with the gold «دَرِت» seal (a link home), «در {name}!», the punchline «حالا برو درتو بذار», the door's `description`, then share / random / all-doors and the donate row. The door sits on the far side, shut (`open={0}`).
+- The punchline is the point of the site: it outranks everything on the page, and the `description` stays small and dim after it.
 
 ## Exit sequence (`components/door-picker.tsx`)
 
@@ -40,8 +45,8 @@ Modified clicks (new tab etc.) and `prefers-reduced-motion` skip the sequence an
 
 - Tailwind v4 + shadcn (`base-nova`, Base UI). Tokens in `styles/theme.css`; `--radius: 0` (sharp, border-line design).
 - `--light` / `bg-light` is the color behind every door. Keep it in sync with `LIGHT_COLOR` in `components/three/parts.tsx`.
-- Animations (`scroll-cue`, `flash-out`, `rise`) live in `styles/animations.css`.
-- Font: Vazirmatn (`styles/fonts.ts`). Persian digits via `toLocaleString("fa-IR")`.
+- Animations (`scroll-cue`, `flash-out`, `rise`, `stamp`, `seal-spin`) live in `styles/animations.css`. `seal-spin` turns the seal's ring on hover. `text-glow` (in `styles/globals.css`) is the light glowing off a line of text.
+- Font: Vazirmatn (`app/layout.tsx`). Persian digits via `toLocaleString("fa-IR")`.
 
 ## Social images
 
@@ -50,7 +55,7 @@ Modified clicks (new tab etc.) and `prefers-reduced-motion` skip the sequence an
 To change them, edit `app/og/page.tsx`, then capture it:
 
 1. `pnpm dev` and open `/og` in Chrome. The dev-tools badge is hidden on that page.
-2. DevTools → device toolbar → Responsive, set **1200 x 630**, DPR 1 → ⋮ → *Capture screenshot* → save as `app/opengraph-image.png`.
+2. DevTools → device toolbar → Responsive, set **1200 x 630**, DPR 1 → ⋮ → _Capture screenshot_ → save as `app/opengraph-image.png`.
 3. Repeat at **1200 x 600** for `app/twitter-image.png`.
 
 Headless `chrome --screenshot` leaves the doors blank because its virtual time never paints WebGL; use a real browser or Playwright with a real wait. Update `*.alt.txt` if the doors shown change.

@@ -3,6 +3,8 @@
 import { Check, Share2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import type { ButtonProps } from "@/components/ui/button";
+
 import { Button } from "@/components/ui/button";
 
 type Status = "copied" | "failed" | "idle";
@@ -13,7 +15,13 @@ const LABEL: Record<Status, string> = {
   failed: "کپی نشد، لینک رو دستی بردار",
 };
 
-export function ShareButton({ name, className }: { name: string; className?: string }) {
+interface ShareButtonProps {
+  name: string;
+  className?: string;
+  variant?: ButtonProps["variant"];
+}
+
+export function ShareButton({ name, className, variant = "outline" }: ShareButtonProps) {
   const [status, setStatus] = useState<Status>("idle");
   const resetRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -50,7 +58,7 @@ export function ShareButton({ name, className }: { name: string; className?: str
   const Icon = status === "copied" ? Check : status === "failed" ? X : Share2;
 
   return (
-    <Button variant="outline" size="lg" className={className} onClick={share}>
+    <Button variant={variant} size="lg" className={className} onClick={share}>
       <Icon data-icon="inline-start" />
       {LABEL[status]}
     </Button>

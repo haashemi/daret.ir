@@ -11,6 +11,41 @@
   --animate-shimmer: shimmer 1.6s linear infinite;
   --animate-stamp: stamp 260ms cubic-bezier(0.23, 1, 0.32, 1) both;
 
+  /* The home splash (components/splash.tsx): door fades in, light comes up, the leaf swings, the word slides out. */
+  --animate-splash-door: splash-fade 300ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  --animate-splash-light: splash-fade 600ms cubic-bezier(0.23, 1, 0.32, 1) 300ms both;
+  --animate-splash-swing: splash-swing 700ms cubic-bezier(0.65, 0, 0.35, 1) 250ms both;
+  --animate-splash-settle: splash-settle 750ms cubic-bezier(0.22, 1, 0.36, 1) 600ms both;
+  --animate-splash-word: splash-word 750ms cubic-bezier(0.22, 1, 0.36, 1) 600ms both;
+  /* Only reached on a slow network: 1.2s after the intro ends. */
+  --animate-splash-loading: splash-fade 400ms cubic-bezier(0.23, 1, 0.32, 1) 2550ms both, shimmer 1.6s linear infinite;
+
+  @keyframes splash-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* Pulled toward the viewer on its left hinge. */
+  @keyframes splash-swing {
+    to {
+      transform: rotateY(-72deg);
+    }
+  }
+
+  @keyframes splash-settle {
+    from {
+      translate: var(--shift) 0;
+    }
+  }
+
+  /* Starts hidden behind the door's edge. */
+  @keyframes splash-word {
+    from {
+      translate: calc(-100% - var(--gap)) 0;
+    }
+  }
+
   @keyframes scroll-cue {
     from {
       translate: 0 -100%;

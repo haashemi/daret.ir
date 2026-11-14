@@ -8,6 +8,7 @@ import { use, useEffect, useRef, useState } from "react";
 import type { Pointer } from "@/components/three/scenery";
 
 import { LeavingContext } from "@/components/door-picker";
+import { Splash } from "@/components/splash";
 import { useSceneFailed } from "@/components/three/scene-status";
 import { Scenery, SCROLL_WALK } from "@/components/three/scenery";
 
@@ -58,6 +59,7 @@ export function Hero() {
       ref={trackRef}
       className={cn("ms-[calc(50%-50vw)] w-screen", SCROLL_WALK && !sceneFailed ? "h-[300svh]" : "h-svh")}
     >
+      <Splash sceneReady={ready || sceneFailed} />
       <div className="sticky top-0 isolate h-svh overflow-hidden text-white">
         {/* Until the scene draws (or without WebGL), a flat sky and water. The canvas is under the DOM. */}
         <div
@@ -83,8 +85,9 @@ export function Hero() {
             <p className="absolute inset-x-4 top-[9%] mx-auto max-w-sm animate-rise font-medium text-balance md:text-lg">
               در های ویژه، نایاب و دست‌ساز مخصوص کسانی که به دنبال گذاشتن درشونن
             </p>
-            <h1 className="absolute inset-x-0 top-[29%] -translate-y-1/2 animate-rise text-[min(24vh,34vw)] leading-none font-black [animation-delay:150ms]">
-              دَرِت
+            <h1 className="absolute inset-x-0 top-[29%] -translate-y-1/2 text-[min(24vh,34vw)] leading-none font-black">
+              {/* The entrance is on the span: `rise` animates `translate`, which the h1 uses to center itself. */}
+              <span className="block animate-rise [animation-delay:150ms]">دَرِت</span>
             </h1>
           </div>
         </div>

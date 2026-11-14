@@ -23,6 +23,15 @@ A Persian (RTL, `lang="fa"`, forced dark theme) single-purpose meme site: a luxu
 - The home hero is one full-screen view, `components/three/scenery.tsx`: a fullscreen shader quad (sky, clouds, hills, rippling water reflecting them), the white door standing in the water, and its mirror image under a water "veil" of the same shader. Its DOM title must read as _behind_ the door, so the scene projects the door's outline each frame and writes it as a `clip-path` hole on the text layer, and moves that layer as if it stood 4m behind the door (parallax). Behind the door, a portal plane over the opening (and its mirrored copy) draws hell and a 👍 (a canvas-texture emoji) with the same ray approach. The hero is a sticky `h-svh` view inside a `300svh` track: the scene reads the track's scroll progress every frame, walks the camera up to the door while it opens, and writes `--hero-progress` for the DOM to fade the text. The hero fades its scene out through `LeavingContext` (from `DoorPicker`), since fading the DOM doesn't hide the canvas.
 - If the canvas can't start (no WebGL), `SceneBoundary` in `scene-canvas.tsx` drops it and sets the flag read by `useSceneFailed()` (`components/three/scene-status.ts`). Cells then keep their stills and clicks navigate without the exit sequence.
 
+### Home splash (`components/splash.tsx`)
+
+On a direct visit to `/`, `Hero` renders `Splash`: a fixed `bg-background` overlay where a line-drawn door swings open and «دَرِت» slides out of its edge, the pair settling at the center (`splash-*` in `styles/animations.css`).
+
+- The intro is pure CSS in the server HTML, so it plays before the JS arrives. «در حال بارگیری» (shimmer) fades in on its own 1.2s after the intro ends, so it still shows when the JS itself is what's slow.
+- It lifts (500ms fade) once the intro has finished (`getAnimations().finished`) **and** the scene is ready (`Scenery`'s `onReady`, or `useSceneFailed()`), or after `GIVE_UP_AFTER` so a scene that never reports can't trap the page. `<noscript>` hides it.
+- Client-side navigations to `/` render nothing: `useSyncExternalStore`'s server snapshot is only seen by the hydrating render.
+- While it's up, `html:has([data-splash]:not([data-exiting]))` stops the page scrolling (`styles/globals.css`).
+
 `components/three/door-scene.tsx` wraps each door: camera (fov 25, slightly off to the right so outward-swinging doors reveal the light), lights, the halo, and `OpenContext`, a damped `{ current: 0..1 }` the door parts read in `useFrame`. Props: `open` (target), `from` (initial), `distance`, `halo`.
 
 ## Result page (`components/door-result.tsx`)

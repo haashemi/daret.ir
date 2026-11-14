@@ -29,6 +29,10 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+  /* Nothing to scroll to while the splash covers the page. */
+  html:has([data-splash]:not([data-exiting])) {
+    overflow: hidden;
+  }
   html {
     @apply scroll-smooth font-sans antialiased;
     @apply scrollbar-thumb-primary scrollbar-track-background scrollbar-gutter-stable;

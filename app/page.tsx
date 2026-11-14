@@ -1,6 +1,7 @@
 import { About } from "@/components/about";
-import { DoorPicker } from "@/components/door-picker";
+import { DoorGrid, DoorPicker } from "@/components/door-picker";
 import { Hero } from "@/components/hero";
+import { JsonLd } from "@/components/json-ld";
 import { config } from "@/lib/config";
 import { doors } from "@/lib/doors";
 
@@ -34,13 +35,12 @@ const jsonLd = {
 export default function HomePage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        // `<` escaped so the payload can never close the script tag.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
-      />
+      <JsonLd data={jsonLd} />
       <DoorPicker>
-        <Hero />
+        <div className="transition-opacity duration-500 group-data-leaving/page:opacity-0">
+          <Hero />
+        </div>
+        <DoorGrid />
       </DoorPicker>
       <About />
     </>

@@ -4,8 +4,8 @@ import Link from "next/link";
 
 import type { Door } from "@/lib/doors";
 
-import { DoorView } from "@/components/door-view";
 import { RandomDoorButton } from "@/components/random-door-button";
+import { ResultDoor } from "@/components/result-door";
 import { ShareButton } from "@/components/share-button";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -16,8 +16,8 @@ export function DoorResult({ door }: { door: Door }) {
   return (
     <>
       <section className="flex min-h-svh items-center py-10">
-        <div className="grid w-full animate-rise border [animation-delay:0.4s] md:grid-cols-[1.15fr_1fr]">
-          <div className="flex min-w-0 flex-col">
+        <div className="grid w-full animate-rise border transition-colors duration-500 [animation-delay:0.4s] group-data-leaving/page:border-transparent md:grid-cols-[1.15fr_1fr]">
+          <div className="flex min-w-0 flex-col transition-opacity duration-500 group-data-leaving/page:opacity-0">
             {/* The seal hangs a little past the row's borders, like a stamp pressed over the frame. */}
             <div className="relative border-b px-7 py-4.5 text-sm text-muted-foreground md:px-11">
               در جدید خدمت شما
@@ -77,16 +77,9 @@ export function DoorResult({ door }: { door: Door }) {
               </span>
             </a>
           </div>
-          <div className="order-first grid place-items-center border-b p-6 md:order-0 md:border-s md:border-b-0">
+          <div className="order-first grid place-items-center border-b p-6 transition-colors duration-500 group-data-leaving/page:border-transparent md:order-0 md:border-s md:border-b-0">
             {/* Shut: putting it in is the owner's job. */}
-            <DoorView
-              slug={door.slug}
-              open={0}
-              from={0}
-              distance={7.4}
-              halo={[2.2, 3]}
-              className="aspect-3/4 w-full max-w-95"
-            />
+            <ResultDoor slug={door.slug} className="aspect-3/4 w-full max-w-95" />
           </div>
         </div>
       </section>

@@ -8,7 +8,8 @@ Models: `components/doors/<slug>.tsx`, registered by slug in `components/doors/i
 1. Add `{ slug, name, description }` to `lib/doors.ts`.
 2. Create `components/doors/<slug>.tsx` exporting a component with no props.
 3. Register it in `components/doors/index.ts`.
-4. Any count works: `SuggestCell` in `components/door-picker.tsx` fills whatever columns are left in the last row, or a full row when it is full.
+4. With `pnpm dev` running, `node scripts/door-images.ts <slug>` to capture its still and social card (`public/doors/`, `public/social/`). Without them the cell shows a broken image until the 3D door draws.
+5. Any count works: `SuggestCell` in `components/door-picker.tsx` fills whatever columns are left in the last row, or a full row when it is full.
 
 ## Coordinates and framing
 

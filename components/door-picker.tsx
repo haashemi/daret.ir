@@ -6,13 +6,13 @@ import { cn } from "cn";
 import { motion, useInView, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createContext, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createContext, use, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import type { Door, DoorSlug } from "@/lib/doors";
 
 import { DoorView } from "@/components/door-view";
 import { useSceneFailed } from "@/components/three/scene-status";
-import { doors, isNewDoor } from "@/lib/doors";
+import { doors, doorStill, isNewDoor } from "@/lib/doors";
 
 interface Box {
   top: number;
@@ -33,6 +33,22 @@ interface Leaving {
 /** `true` once a door is chosen and the page is fading out, for the hero to fade what the canvas draws behind it. */
 export const LeavingContext = createContext(false);
 LeavingContext.displayName = "LeavingContext";
+
+type Choose = (event: MouseEvent, slug: DoorSlug, box: HTMLElement) => void;
+
+/** The exit sequence's state and trigger, for the cells (and other doors on the page) inside a `DoorPicker`. */
+const PickerContext = createContext<{
+  leaving: Leaving | undefined;
+  choose: Choose;
+} | null>(null);
+PickerContext.displayName = "PickerContext";
+
+function usePicker() {
+  const picker = use(PickerContext);
+  if (!picker) throw new Error("Door cells must be inside a DoorPicker.");
+
+  return picker;
+}
 
 const HOVER_OPEN = 0.2;
 const EASE_IN_OUT = [0.65, 0, 0.35, 1] as const;
@@ -75,11 +91,19 @@ function centeredBox(): Box {
   const height = Math.min(window.innerHeight * 0.62, window.innerWidth * 0.9 * (16 / 9));
   const width = height * (9 / 16);
 
-  return { top: (window.innerHeight - height) / 2, left: (window.innerWidth - width) / 2, width, height };
+  return {
+    top: (window.innerHeight - height) / 2,
+    left: (window.innerWidth - width) / 2,
+    width,
+    height,
+  };
 }
 
 /**
- * The hero (`children`) and the door grid. Choosing a door runs the exit sequence, then navigates:
+ * A page of doors to choose from: `children` holds them (`DoorGrid`, `DoorCell`s) along with whatever else is on the
+ * page. Mark what should fade with `group-data-leaving/page:opacity-0`; doors that aren't cells cover themselves
+ * through `useExitState()`. Choosing a door runs the exit sequence, then navigates:
+
  * 1. The page scales out around the door while the other doors are covered and the text fades.
  * 2. The door is handed to a fixed box that flies to the center while the door swings open.
  * 3. The box scales up into the light, the screen floods with it, and `/door/[slug]` takes over.
@@ -91,8 +115,6 @@ export function DoorPicker({ children }: { children: ReactNode }) {
   const pageRef = useRef<HTMLDivElement>(null);
   const [leaving, setLeaving] = useState<Leaving>();
   const [origin, setOrigin] = useState("50% 50%");
-  const order = useSyncExternalStore(subscribe, getShuffled, getCatalog);
-
   // Next keeps this page mounted but hidden after navigating away; come back to a fresh grid.
   useLayoutEffect(() => () => setLeaving(undefined), []);
 
@@ -108,7 +130,10 @@ export function DoorPicker({ children }: { children: ReactNode }) {
     setLeaving({ slug });
     await wait(450);
 
-    const flight = { from: toBox(box.getBoundingClientRect()), to: centeredBox() };
+    const flight = {
+      from: toBox(box.getBoundingClientRect()),
+      to: centeredBox(),
+    };
     setLeaving({ slug, flight });
     await wait(50);
 
@@ -126,15 +151,10 @@ export function DoorPicker({ children }: { children: ReactNode }) {
         style={{ transformOrigin: origin }}
         className="group/page flex flex-col gap-16 transition-[scale] duration-700 ease-in-out data-leaving:scale-[0.94]"
       >
-        <div className="transition-opacity duration-500 group-data-leaving/page:opacity-0">
-          <LeavingContext value={Boolean(leaving)}>{children}</LeavingContext>
-        </div>
-        <ul className="grid grid-cols-2 border-s border-t transition-colors duration-500 group-data-leaving/page:border-transparent md:grid-cols-3 xl:grid-cols-5">
-          {order.map((door, index) => (
-            <DoorCell key={door.slug} door={door} index={index} leaving={leaving} onChoose={choose} />
-          ))}
-          <SuggestCell />
-        </ul>
+        <LeavingContext value={Boolean(leaving)}>
+          {/* eslint-disable-next-line @eslint-react/no-unstable-context-value -- React Compiler memoizes it. */}
+          <PickerContext value={{ leaving, choose }}>{children}</PickerContext>
+        </LeavingContext>
       </div>
 
       {leaving?.flight && (
@@ -162,15 +182,22 @@ export function DoorPicker({ children }: { children: ReactNode }) {
   );
 }
 
-interface DoorCellProps {
-  door: Door;
-  index: number;
-  leaving: Leaving | undefined;
-  onChoose: (event: MouseEvent, slug: DoorSlug, box: HTMLElement) => void;
+/** The home page's grid: every door, in a fresh order per page load, closed by the suggestion cell. */
+export function DoorGrid() {
+  const order = useSyncExternalStore(subscribe, getShuffled, getCatalog);
+
+  return (
+    <ul className="grid grid-cols-2 border-s border-t transition-colors duration-500 group-data-leaving/page:border-transparent md:grid-cols-3 xl:grid-cols-5">
+      {order.map((door, index) => (
+        <DoorCell key={door.slug} door={door} index={index} />
+      ))}
+      <SuggestCell />
+    </ul>
+  );
 }
 
-/** What the exit sequence does to one cell. */
-function exitState(leaving: Leaving | undefined, slug: DoorSlug) {
+/** What the exit sequence does to one door; one with no `slug` is never the chosen one. */
+function exitState(leaving: Leaving | undefined, slug?: DoorSlug) {
   if (!leaving) return { chosen: false, dismissed: false, showView: true, showCover: true };
 
   const chosen = leaving.slug === slug;
@@ -184,19 +211,39 @@ function exitState(leaving: Leaving | undefined, slug: DoorSlug) {
 }
 
 /**
- * Door-shaped placeholder inside a cell's cover, roughly where the door's frame lands. It shimmers until the door is
- * drawn, then cross-fades into it with the cover. Hidden on the covers that dismiss the other doors.
+ * What the exit sequence does to a door that isn't a cell, like the result page's: draw it while `showView`, and keep a
+ * page-colored cover over it while `showCover`, opaque once `dismissed`.
  */
-function DoorPlaceholder({ hidden, loading }: { hidden: boolean; loading: boolean }) {
+export function useExitState() {
+  return exitState(usePicker().leaving);
+}
+
+/**
+ * What a cell's cover shows until its door is drawn: a still of the door, shut (`doorStill`), over a door-shaped
+ * shimmer while the still loads. The still matches the first frame, so the cover's fade into the 3D door is seamless,
+ * and it stays as the door when there is no WebGL. Hidden on the covers that dismiss the other doors.
+ */
+function DoorPlaceholder({ door, hidden, loading }: { door: Door; hidden: boolean; loading: boolean }) {
   if (hidden) return null;
 
   return (
-    <div
-      className={cn(
-        "absolute inset-x-[16%] top-[10%] bottom-[14%] bg-muted",
-        loading && "animate-shimmer bg-linear-to-l from-muted via-muted-foreground/15 to-muted bg-size-[200%_100%]",
-      )}
-    />
+    <>
+      <div
+        className={cn(
+          "absolute inset-x-[16%] top-[10%] bottom-[14%] bg-muted",
+          loading && "animate-shimmer bg-linear-to-l from-muted via-muted-foreground/15 to-muted bg-size-[200%_100%]",
+        )}
+      />
+      <img
+        src={doorStill(door.slug)}
+        alt={`در ${door.name}`}
+        width={450}
+        height={800}
+        loading="lazy"
+        decoding="async"
+        className="absolute inset-0 size-full"
+      />
+    </>
   );
 }
 
@@ -220,7 +267,9 @@ function NewBadge({ door }: { door: Door }) {
   );
 }
 
-function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
+/** One door to choose, with its label. Must be inside a `DoorPicker`. */
+export function DoorCell({ door, index }: { door: Door; index: number }) {
+  const { leaving, choose } = usePicker();
   const ref = useRef<HTMLLIElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
@@ -245,7 +294,7 @@ function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
         href={`/door/${door.slug}`}
         aria-label={`در ${door.name}`}
         className="group block p-3 -outline-offset-2 outline-light focus-visible:outline-2 md:p-6"
-        onClick={(event) => boxRef.current && onChoose(event, door.slug, boxRef.current)}
+        onClick={(event) => boxRef.current && choose(event, door.slug, boxRef.current)}
         onPointerEnter={(event) => event.pointerType === "mouse" && setHovered(true)}
         onPointerLeave={() => setHovered(false)}
         onFocus={() => setHovered(true)}
@@ -269,7 +318,7 @@ function DoorCell({ door, index, leaving, onChoose }: DoorCellProps) {
               )}
               style={{ transitionDelay: `${stagger}ms` }}
             >
-              <DoorPlaceholder hidden={Boolean(leaving)} loading={!ready && !sceneFailed} />
+              <DoorPlaceholder door={door} hidden={Boolean(leaving)} loading={!ready && !sceneFailed} />
             </div>
           )}
         </div>

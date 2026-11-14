@@ -39,7 +39,7 @@ A Persian (RTL, `lang="fa"`, forced dark theme) single-purpose meme site: a luxu
 1. `{ slug }`: page scales to 0.94 around the chosen door, hero/labels/grid lines fade, other cells' covers fade in. 450ms.
 2. `{ slug, flight }`: a `fixed` motion box mounts at the chosen cell's rect with its own `DoorView`; other cells unmount their views (covers still on). 50ms, so both draw the chosen door at the same spot.
 3. `{ …, handedOff: true }`: the cell's view and all covers unmount; the box flies to the center (door opens to 1), then scales ×2.6 while a full-screen `bg-light` overlay fades in.
-4. `router.push('/door/[slug]')`. The result page starts with its own `bg-light` overlay (`animate-flash-out`), so the light carries across the cut.
+4. `router.push('/door/[slug]')`. The result page starts with its own `bg-light` overlay (`ArrivalLight`, `animate-flash-out`), so the light carries across the cut. `choose()` marks the navigation first (`markArrivalThroughLight()`); every other arrival (direct visit, other links, back/forward, no WebGL, reduced motion) has no overlay.
 
 Modified clicks (new tab etc.) and `prefers-reduced-motion` skip the sequence and navigate normally.
 

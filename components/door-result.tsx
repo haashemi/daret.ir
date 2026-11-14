@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import type { Door } from "@/lib/doors";
 
+import { ArrivalLight } from "@/components/arrival-light";
 import { RandomDoorButton } from "@/components/random-door-button";
 import { ResultDoor } from "@/components/result-door";
 import { ShareButton } from "@/components/share-button";
@@ -84,7 +85,7 @@ export function DoorResult({ door }: { door: Door }) {
         </div>
       </section>
       {/* The page arrives through the light the home page flooded the screen with. */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 animate-flash-out bg-light" />
+      <ArrivalLight />
     </>
   );
 }

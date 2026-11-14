@@ -10,6 +10,7 @@ import { createContext, use, useLayoutEffect, useRef, useState, useSyncExternalS
 
 import type { Door, DoorSlug } from "@/lib/doors";
 
+import { markArrivalThroughLight } from "@/components/arrival-light";
 import { DoorView } from "@/components/door-view";
 import { useSceneFailed } from "@/components/three/scene-status";
 import { doors, doorStill, isNewDoor } from "@/lib/doors";
@@ -48,6 +49,7 @@ function usePicker() {
 }
 
 const HOVER_OPEN = 0.2;
+// The exit sequence's on-screen movement; the same curve as `--ease-door` (`ease-door`) in styles/animations.css.
 const EASE_IN_OUT = [0.65, 0, 0.35, 1] as const;
 
 const wait = (ms: number) =>
@@ -106,6 +108,7 @@ export function DoorPicker({ children }: { children: ReactNode }) {
   const pageRef = useRef<HTMLDivElement>(null);
   const [leaving, setLeaving] = useState<Leaving>();
   const [origin, setOrigin] = useState("50% 50%");
+
   // Next keeps this page mounted but hidden after navigating away; come back to a fresh grid.
   useLayoutEffect(() => () => setLeaving(undefined), []);
 
@@ -128,6 +131,7 @@ export function DoorPicker({ children }: { children: ReactNode }) {
     setLeaving({ slug, flight, handedOff: true });
     await wait(1550);
 
+    markArrivalThroughLight();
     router.push(`/door/${slug}`);
   }
 
@@ -137,7 +141,7 @@ export function DoorPicker({ children }: { children: ReactNode }) {
         ref={pageRef}
         data-leaving={leaving ? "" : undefined}
         style={{ transformOrigin: origin }}
-        className="group/page flex flex-col gap-16 transition-[scale] duration-700 ease-in-out data-leaving:scale-[0.94]"
+        className="group/page flex flex-col gap-16 transition-[scale] duration-700 ease-door data-leaving:scale-[0.94]"
       >
         <LeavingContext value={Boolean(leaving)}>
           {/* eslint-disable-next-line @eslint-react/no-unstable-context-value -- React Compiler memoizes it. */}

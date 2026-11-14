@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "cn";
 import { Check, Share2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -59,7 +60,15 @@ export function ShareButton({ name, className, variant = "outline" }: ShareButto
 
   return (
     <Button variant={variant} size="lg" className={className} onClick={share}>
-      <Icon data-icon="inline-start" />
+      {/* The confirmation's icon pops in; the quiet return to idle stays instant. */}
+      <Icon
+        key={status}
+        data-icon="inline-start"
+        className={cn(
+          status !== "idle" &&
+            "transition-[opacity,scale] duration-150 ease-snappy starting:scale-60 starting:opacity-0 starting:motion-reduce:scale-100",
+        )}
+      />
       {LABEL[status]}
     </Button>
   );

@@ -2,6 +2,9 @@
   /* Strong ease-out for small UI responses (hover, press). */
   --ease-snappy: cubic-bezier(0.23, 1, 0.32, 1);
 
+  /* Symmetric in-out for the door-choice exit sequence; mirrors EASE_IN_OUT in components/door-picker.tsx. */
+  --ease-door: cubic-bezier(0.65, 0, 0.35, 1);
+
   --animate-scroll-cue: scroll-cue 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   --animate-flash-out: flash-out 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-rise: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;

@@ -37,10 +37,7 @@ LeavingContext.displayName = "LeavingContext";
 type Choose = (event: MouseEvent, slug: DoorSlug, box: HTMLElement) => void;
 
 /** The exit sequence's state and trigger, for the cells (and other doors on the page) inside a `DoorPicker`. */
-const PickerContext = createContext<{
-  leaving: Leaving | undefined;
-  choose: Choose;
-} | null>(null);
+const PickerContext = createContext<{ leaving: Leaving | undefined; choose: Choose } | null>(null);
 PickerContext.displayName = "PickerContext";
 
 function usePicker() {
@@ -91,19 +88,13 @@ function centeredBox(): Box {
   const height = Math.min(window.innerHeight * 0.62, window.innerWidth * 0.9 * (16 / 9));
   const width = height * (9 / 16);
 
-  return {
-    top: (window.innerHeight - height) / 2,
-    left: (window.innerWidth - width) / 2,
-    width,
-    height,
-  };
+  return { top: (window.innerHeight - height) / 2, left: (window.innerWidth - width) / 2, width, height };
 }
 
 /**
  * A page of doors to choose from: `children` holds them (`DoorGrid`, `DoorCell`s) along with whatever else is on the
  * page. Mark what should fade with `group-data-leaving/page:opacity-0`; doors that aren't cells cover themselves
  * through `useExitState()`. Choosing a door runs the exit sequence, then navigates:
-
  * 1. The page scales out around the door while the other doors are covered and the text fades.
  * 2. The door is handed to a fixed box that flies to the center while the door swings open.
  * 3. The box scales up into the light, the screen floods with it, and `/door/[slug]` takes over.
@@ -130,10 +121,7 @@ export function DoorPicker({ children }: { children: ReactNode }) {
     setLeaving({ slug });
     await wait(450);
 
-    const flight = {
-      from: toBox(box.getBoundingClientRect()),
-      to: centeredBox(),
-    };
+    const flight = { from: toBox(box.getBoundingClientRect()), to: centeredBox() };
     setLeaving({ slug, flight });
     await wait(50);
 

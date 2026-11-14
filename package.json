@@ -36,6 +36,7 @@
     "@types/three": "catalog:quality",
     "babel-plugin-react-compiler": "catalog:frontend",
     "eslint": "catalog:quality",
+    "playwright-core": "catalog:quality",
     "prettier": "catalog:quality",
     "shadcn": "catalog:frontend",
     "tailwindcss": "catalog:frontend",

@@ -47,7 +47,7 @@ Modified clicks (new tab etc.) and `prefers-reduced-motion` skip the sequence an
 
 - Tailwind v4 + shadcn (`base-nova`, Base UI). Tokens in `styles/theme.css`; `--radius: 0` (sharp, border-line design).
 - `--light` / `bg-light` is the color behind every door. Keep it in sync with `LIGHT_COLOR` in `components/three/parts.tsx`.
-- Animations (`scroll-cue`, `flash-out`, `rise`, `stamp`, `seal-spin`) live in `styles/animations.css`. `seal-spin` turns the seal's ring on hover. `text-glow` (in `styles/globals.css`) is the light glowing off a line of text.
+- Animations (`scroll-cue`, `flash-out`, `rise`, `stamp`, `shimmer`) live in `styles/animations.css`. Motion is kept to the hero, the door-choice sequence, the result page's light (`flash-out`) and seal (`stamp`); grid cells and result-page text don't animate in. `text-glow` (in `styles/globals.css`) is the light glowing off a line of text.
 - Font: Vazirmatn (`app/layout.tsx`). Persian digits via `toLocaleString("fa-IR")`.
 
 ## Social images and door stills

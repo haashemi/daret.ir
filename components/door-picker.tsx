@@ -258,26 +258,18 @@ function NewBadge({ door }: { door: Door }) {
 /** One door to choose, with its label. Must be inside a `DoorPicker`. */
 export function DoorCell({ door, index }: { door: Door; index: number }) {
   const { leaving, choose } = usePicker();
-  const ref = useRef<HTMLLIElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.2 });
   const [hovered, setHovered] = useState(false);
   const [ready, setReady] = useState(false);
   const sceneFailed = useSceneFailed();
 
   const { chosen, dismissed, showView, showCover } = exitState(leaving, door.slug);
   const ajar = useAjar(boxRef, hovered || chosen);
-  // A cover the color of the page hides the door: before it scrolls into view, while the canvas is still loading it,
-  // and when another door is chosen.
-  const covered = !inView || !ready || dismissed;
-  // Doors reveal one by one across a row.
-  const stagger = leaving ? 0 : (index % 4) * 120;
+  // A cover the color of the page hides the door while the canvas is still loading it, and when another door is chosen.
+  const covered = !ready || dismissed;
 
   return (
-    <li
-      ref={ref}
-      className="border-e border-b transition-colors duration-500 group-data-leaving/page:border-transparent"
-    >
+    <li className="border-e border-b transition-colors duration-500 group-data-leaving/page:border-transparent">
       <Link
         href={`/door/${door.slug}`}
         aria-label={`در ${door.name}`}
@@ -302,9 +294,8 @@ export function DoorCell({ door, index }: { door: Door; index: number }) {
               className={cn(
                 "absolute inset-0 bg-background transition-opacity",
                 covered ? "opacity-100" : "opacity-0",
-                leaving ? "duration-400" : "duration-700",
+                leaving ? "duration-400" : "duration-200",
               )}
-              style={{ transitionDelay: `${stagger}ms` }}
             >
               <DoorPlaceholder door={door} hidden={Boolean(leaving)} loading={!ready && !sceneFailed} />
             </div>
@@ -312,10 +303,9 @@ export function DoorCell({ door, index }: { door: Door; index: number }) {
         </div>
         <div
           className={cn(
-            "mt-3 flex items-baseline justify-between gap-2 border-t pt-3 transition duration-700 group-focus-visible:border-foreground md:mt-6",
-            inView && !leaving ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0",
+            "mt-3 flex items-baseline justify-between gap-2 border-t pt-3 transition-opacity duration-700 group-focus-visible:border-foreground md:mt-6",
+            leaving && "opacity-0",
           )}
-          style={{ transitionDelay: `${leaving ? 0 : stagger + 200}ms` }}
         >
           <span className="flex items-center gap-2 text-sm font-medium md:text-base">
             {door.name}
